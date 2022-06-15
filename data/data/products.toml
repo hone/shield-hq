@@ -1,0 +1,23 @@
+[[product]]
+name = "Core Set"
+release_date = "2019-11-01"
+type = "Core Set"
+code = "MC01en"
+wave = 1
+
+[[product.set]]
+name = "Spider-Man"
+type = "Hero Signature"
+
+[[product.set]]
+name = "Rhino"
+type = "Villain"
+
+[[product.set]]
+name = "Spider-Man Nemesis"
+type = "Nemesis"
+
+[[product.set]]
+name = "Bomb Scare"
+type = "Modular Encounter"
+

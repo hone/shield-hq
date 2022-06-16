@@ -1,24 +1,13 @@
 use lazy_static::lazy_static;
 use regex::Regex;
-use serde::{de, Deserialize};
-
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct Keyword {
-    pub incite: Option<u8>,
-    pub hinder: Option<u8>,
-    #[serde(default)]
-    pub quickstrike: bool,
-    #[serde(default)]
-    pub stalwart: bool,
-    #[serde(default)]
-    pub steady: bool,
-    #[serde(default)]
-    pub toughness: bool,
-}
+use serde::{
+    de::{self, Deserializer, Unexpected, Visitor},
+    Deserialize,
+};
+use std::fmt;
 
 #[derive(Debug, PartialEq)]
-pub enum KeywordEnum {
+pub enum Keyword {
     Incite(u8),
     Hinder(u8),
     Quickstrike,
@@ -27,91 +16,129 @@ pub enum KeywordEnum {
     Toughness,
 }
 
-impl TryFrom<&str> for KeywordEnum {
-    type Error = &'static str;
+impl<'de> Deserialize<'de> for Keyword {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct KeywordVisitor;
 
-    fn try_from(input: &str) -> Result<Self, Self::Error> {
-        lazy_static! {
-            static ref INCITE_RE: Regex = Regex::new(r"Incite ([\d]+)").unwrap();
-            static ref HINDER_RE: Regex = Regex::new(r"Hinder ([\d]+)").unwrap();
-        }
+        impl<'de> Visitor<'de> for KeywordVisitor {
+            type Value = Keyword;
 
-        if let Some(caps) = INCITE_RE.captures(input) {
-            if let Some(cap_value) = caps.get(1) {
-                let value = cap_value
-                    .as_str()
-                    .parse::<u8>()
-                    .map_err(|_| "'Incite X', where X is a number.")?;
-
-                Ok(KeywordEnum::Incite(value))
-            } else {
-                // should not get here if it captures the regex
-                Err("Incite X")
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a keyword")
             }
-        } else if let Some(caps) = HINDER_RE.captures(input) {
-            if let Some(cap_value) = caps.get(1) {
-                let value = cap_value
-                    .as_str()
-                    .parse::<u8>()
-                    .map_err(|_| "'Hinder X', where X is a number.")?;
 
-                Ok(KeywordEnum::Hinder(value))
-            } else {
-                // should not get here if it captures the regex
-                Err("Hinder X")
+            fn visit_str<E>(self, input: &str) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                lazy_static! {
+                    static ref INCITE_RE: Regex = Regex::new(r"Incite ([\d]+)").unwrap();
+                    static ref HINDER_RE: Regex = Regex::new(r"Hinder ([\d]+)").unwrap();
+                }
+
+                if let Some(caps) = INCITE_RE.captures(input) {
+                    if let Some(cap_value) = caps.get(1) {
+                        let value = cap_value.as_str().parse::<u8>().map_err(|_| {
+                            de::Error::invalid_value(
+                                Unexpected::Str(input),
+                                &"'Incite X', where X is a number.",
+                            )
+                        })?;
+
+                        Ok(Keyword::Incite(value))
+                    } else {
+                        // should not get here if it captures the regex
+                        Err(de::Error::invalid_value(
+                            Unexpected::Str(input),
+                            &"Incite X",
+                        ))
+                    }
+                } else if let Some(caps) = HINDER_RE.captures(input) {
+                    if let Some(cap_value) = caps.get(1) {
+                        let value = cap_value.as_str().parse::<u8>().map_err(|_| {
+                            de::Error::invalid_value(
+                                Unexpected::Str(input),
+                                &"'Hinder X', where X is a number.",
+                            )
+                        })?;
+
+                        Ok(Keyword::Hinder(value))
+                    } else {
+                        // should not get here if it captures the regex
+                        Err(de::Error::invalid_value(
+                            Unexpected::Str(input),
+                            &"Hinder X",
+                        ))
+                    }
+                } else if input == "Quickstrike" {
+                    Ok(Keyword::Quickstrike)
+                } else if input == "Stalwart" {
+                    Ok(Keyword::Stalwart)
+                } else if input == "Steady" {
+                    Ok(Keyword::Steady)
+                } else if input == "Toughness" {
+                    Ok(Keyword::Toughness)
+                } else {
+                    Err(de::Error::invalid_value(
+                        Unexpected::Str(input),
+                        &"Not a valid Keyword",
+                    ))
+                }
             }
-        } else if input == "Quickstrike" {
-            Ok(KeywordEnum::Quickstrike)
-        } else if input == "Stalwart" {
-            Ok(KeywordEnum::Stalwart)
-        } else if input == "Steady" {
-            Ok(KeywordEnum::Steady)
-        } else if input == "Toughness" {
-            Ok(KeywordEnum::Toughness)
-        } else {
-            Err("Not a valid Keyword: {value}")
         }
+
+        deserializer.deserialize_str(KeywordVisitor)
     }
-}
-
-fn deserialize_incite<'de, D>(deserialize: D) -> Result<u8, D::Error>
-where
-    D: de::Deserializer<'de>,
-{
-    let buf = String::deserialize(deserialize)?;
-
-    lazy_static! {
-        static ref INCITE_RE: Regex = Regex::new(r"Incite ([\d]+)").unwrap();
-    }
-
-    if let Some(caps) = INCITE_RE.captures(&buf) {
-        if let Some(cap_value) = caps.get(1) {
-            let value = cap_value.as_str().parse::<u8>().map_err(|_| {
-                de::Error::invalid_value(
-                    de::Unexpected::Str(&buf),
-                    &"'Incite X', where X is a number.",
-                )
-            })?;
-
-            return Ok(value);
-        }
-    }
-
-    Err(de::Error::invalid_value(
-        de::Unexpected::Str(&buf),
-        &"Incite X",
-    ))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    //#[test]
-    //fn it_parses_incite() {
-    //    let result: Result<KeywordEnum, _> = toml::from_str("\"Incite 1\"");
+    #[derive(Debug, Deserialize)]
+    struct KeywordDocument {
+        pub keywords: Vec<Keyword>,
+    }
 
-    //    let incite = result.unwrap();
-    //    assert_eq!(KeywordEnum::Incite(1), incite);
-    //}
+    fn toml_keyword(keyword: &str) -> Keyword {
+        let result: Result<KeywordDocument, _> =
+            toml::from_str(&format!(r#"keywords = ["{keyword}"]"#));
+        assert!(result.is_ok());
+
+        let mut document = result.unwrap();
+        document.keywords.pop().unwrap()
+    }
+
+    #[test]
+    fn it_parses_incite() {
+        assert_eq!(Keyword::Incite(1), toml_keyword("Incite 1"));
+    }
+
+    #[test]
+    fn it_parses_hinder() {
+        assert_eq!(Keyword::Hinder(2), toml_keyword("Hinder 2"));
+    }
+
+    #[test]
+    fn it_parses_quickstrike() {
+        assert_eq!(Keyword::Quickstrike, toml_keyword("Quickstrike"));
+    }
+
+    #[test]
+    fn it_parses_stalwart() {
+        assert_eq!(Keyword::Stalwart, toml_keyword("Stalwart"));
+    }
+
+    #[test]
+    fn it_parses_steady() {
+        assert_eq!(Keyword::Steady, toml_keyword("Steady"));
+    }
+
+    #[test]
+    fn it_parses_toughness() {
+        assert_eq!(Keyword::Toughness, toml_keyword("Toughness"));
+    }
 }

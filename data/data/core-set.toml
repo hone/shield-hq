@@ -157,5 +157,4 @@ traits = ["Criminal"]
 boost_icons = 2
 text = "Quickstrike. (After this minion engages your hero, it attacks.)"
 flavor_text = "\"I'm faster, stronger, and smarter than a hundred men my age!\""
-[card.side.keyword]
-quickstrike = true
+keywords = ["Quickstrike"]

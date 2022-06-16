@@ -79,7 +79,7 @@ pub enum CardSideVariant {
         boost_icons: u8,
         #[serde(default)]
         boost_star_icon: bool,
-        keyword: Option<Keyword>,
+        keywords: Vec<Keyword>,
     },
 }
 

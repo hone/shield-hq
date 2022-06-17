@@ -19,6 +19,7 @@ pub struct Document {
 pub struct Card {
     pub product: Vec<CardProduct>,
     pub side: Vec<CardSide>,
+    pub aspect: Option<Aspect>,
 }
 
 #[derive(Deserialize)]
@@ -34,6 +35,15 @@ pub struct CardProduct {
 pub struct CardSet {
     pub name: String,
     pub positions: Option<Vec<u32>>,
+}
+
+#[derive(Deserialize)]
+pub enum Aspect {
+    Basic,
+    Aggression,
+    Leadership,
+    Protection,
+    Justice,
 }
 
 #[derive(Deserialize)]

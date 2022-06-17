@@ -63,23 +63,34 @@ pub enum CardSideVariant {
         traits: Vec<Trait>,
         resources: Vec<Resource>,
     },
-    #[serde(rename = "Side Scheme")]
-    SideScheme {
-        icons: Option<Vec<SideSchemeIcon>>,
-        starting_threat: String,
-        boost_icons: u8,
-        #[serde(default)]
-        star_icon: bool,
-    },
     Minion {
         unique: bool,
         sch: String,
         atk: String,
         hit_points: String,
+        #[serde(default)]
         boost_icons: u8,
         #[serde(default)]
         boost_star_icon: bool,
+        boost_text: Option<String>,
         keywords: Vec<Keyword>,
+    },
+    #[serde(rename = "Side Scheme")]
+    SideScheme {
+        icons: Option<Vec<SideSchemeIcon>>,
+        starting_threat: String,
+        #[serde(default)]
+        boost_icons: u8,
+        #[serde(default)]
+        boost_star_icon: bool,
+        boost_text: Option<String>,
+    },
+    Treachery {
+        #[serde(default)]
+        boost_icons: u8,
+        #[serde(default)]
+        boost_star_icon: bool,
+        boost_text: Option<String>,
     },
 }
 

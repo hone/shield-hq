@@ -1,4 +1,3 @@
-use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{
     de::{self, Deserializer, Unexpected, Visitor},
@@ -34,45 +33,10 @@ impl<'de> Deserialize<'de> for Keyword {
             where
                 E: de::Error,
             {
-                lazy_static! {
-                    static ref INCITE_RE: Regex = Regex::new(r"Incite ([\d]+)").unwrap();
-                    static ref HINDER_RE: Regex = Regex::new(r"Hinder ([\d]+)").unwrap();
-                }
-
-                if let Some(caps) = INCITE_RE.captures(input) {
-                    if let Some(cap_value) = caps.get(1) {
-                        let value = cap_value.as_str().parse::<u8>().map_err(|_| {
-                            de::Error::invalid_value(
-                                Unexpected::Str(input),
-                                &"'Incite X', where X is a number.",
-                            )
-                        })?;
-
-                        Ok(Keyword::Incite(value))
-                    } else {
-                        // should not get here if it captures the regex
-                        Err(de::Error::invalid_value(
-                            Unexpected::Str(input),
-                            &"Incite X",
-                        ))
-                    }
-                } else if let Some(caps) = HINDER_RE.captures(input) {
-                    if let Some(cap_value) = caps.get(1) {
-                        let value = cap_value.as_str().parse::<u8>().map_err(|_| {
-                            de::Error::invalid_value(
-                                Unexpected::Str(input),
-                                &"'Hinder X', where X is a number.",
-                            )
-                        })?;
-
-                        Ok(Keyword::Hinder(value))
-                    } else {
-                        // should not get here if it captures the regex
-                        Err(de::Error::invalid_value(
-                            Unexpected::Str(input),
-                            &"Hinder X",
-                        ))
-                    }
+                if let Some(amount) = deserialize_number("Incite", input)? {
+                    Ok(Keyword::Incite(amount))
+                } else if let Some(amount) = deserialize_number("Hinder", input)? {
+                    Ok(Keyword::Hinder(amount))
                 } else if input == "Quickstrike" {
                     Ok(Keyword::Quickstrike)
                 } else if input == "Stalwart" {
@@ -91,6 +55,35 @@ impl<'de> Deserialize<'de> for Keyword {
         }
 
         deserializer.deserialize_str(KeywordVisitor)
+    }
+}
+
+/// Extract the number from a keyword. For instance the X in "Hinder X".
+fn deserialize_number<E>(keyword: &str, input: &str) -> Result<Option<u8>, E>
+where
+    E: de::Error,
+{
+    let regex = Regex::new(&format!(r"{} ([\d]+)", keyword)).unwrap();
+
+    if let Some(caps) = regex.captures(input) {
+        if let Some(cap_value) = caps.get(1) {
+            let value = cap_value.as_str().parse::<u8>().map_err(|_| {
+                de::Error::invalid_value(
+                    Unexpected::Str(input),
+                    &format!("'{keyword} X', where X is a number.").as_str(),
+                )
+            })?;
+
+            Ok(Some(value))
+        } else {
+            // should not get here if it captures the regex
+            Err(de::Error::invalid_value(
+                Unexpected::Str(input),
+                &format!("{keyword} X").as_str(),
+            ))
+        }
+    } else {
+        Ok(None)
     }
 }
 

@@ -10,10 +10,12 @@ pub enum Trait {
     Genius,
     #[serde(rename = "Hero for Hire")]
     HeroForHire,
+    Item,
     Persona,
     Skill,
     #[serde(rename = "S.H.I.E.L.D.")]
     Shield,
     Spy,
     Superpower,
+    Tech,
 }

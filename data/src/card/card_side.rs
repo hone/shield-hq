@@ -8,12 +8,15 @@ pub struct CardSide {
     pub text: String,
     pub flavor_text: Option<String>,
     pub illustrators: Option<Vec<String>>,
+    #[serde(default)]
+    pub traits: Vec<Trait>,
     #[serde(flatten)]
     pub variant: CardSideVariant,
 }
 
 #[derive(Deserialize)]
 #[serde(tag = "type")]
+#[serde(deny_unknown_fields)]
 pub enum CardSideVariant {
     Hero {
         side: Side,
@@ -47,6 +50,7 @@ pub enum CardSideVariant {
         atk: String,
         atk_consequential: u32,
         hit_points: String,
+        #[serde(default)]
         traits: Vec<Trait>,
         resources: Vec<Resource>,
     },
@@ -60,7 +64,14 @@ pub enum CardSideVariant {
         cost: String,
         #[serde(default)]
         unique: bool,
+        #[serde(default)]
         traits: Vec<Trait>,
+        resources: Vec<Resource>,
+    },
+    Upgrade {
+        cost: String,
+        #[serde(default)]
+        unique: bool,
         resources: Vec<Resource>,
     },
     Minion {
@@ -68,6 +79,8 @@ pub enum CardSideVariant {
         sch: String,
         atk: String,
         hit_points: String,
+        #[serde(default)]
+        traits: Vec<Trait>,
         #[serde(default)]
         boost_icons: u8,
         #[serde(default)]
@@ -78,6 +91,8 @@ pub enum CardSideVariant {
     #[serde(rename = "Side Scheme")]
     SideScheme {
         icons: Option<Vec<SideSchemeIcon>>,
+        #[serde(default)]
+        traits: Vec<Trait>,
         starting_threat: String,
         #[serde(default)]
         boost_icons: u8,

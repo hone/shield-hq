@@ -5,7 +5,7 @@ use crate::card::{Keyword, Resource, SideSchemeIcon, Trait};
 #[derive(Deserialize)]
 pub struct CardSide {
     pub name: String,
-    pub text: String,
+    pub text: Option<String>,
     pub flavor_text: Option<String>,
     pub illustrators: Option<Vec<String>>,
     #[serde(default)]
@@ -58,6 +58,9 @@ pub enum CardSideVariant {
         cost: String,
         #[serde(default)]
         traits: Vec<Trait>,
+        resources: Vec<Resource>,
+    },
+    Resource {
         resources: Vec<Resource>,
     },
     Support {

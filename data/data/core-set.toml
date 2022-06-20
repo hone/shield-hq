@@ -177,6 +177,180 @@ Hero form only. Attach to an enemy.
 """
 
 [[card]]
+[[card.product]]
+code = "MC01en"
+positions = [10]
+[[card.product.set]]
+name = "Captain Marvel (Carol Danvers)"
+[[card.side]]
+side = "A"
+name = "Captain Marvel"
+type = "Hero"
+unique = true
+thw = "2"
+atk = "2"
+def = "1"
+hand_size = 5
+hit_points = "12"
+traits = ["Avenger", "Soldier"]
+text = """
+*Rechannel* - **Action**: Spend a :energy: resource and heal 1 damage from Captain Marvel -> draw 1 card. (Limit one per round.)
+"""
+flavor_text = '"I never quit."'
+[[card.side]]
+side = "B"
+name = "Carol Danvers"
+type = "Alter-Ego"
+unique = true
+rec = "4"
+hand_size = 6
+hit_points = "12"
+traits = ["S.H.I.E.L.D.", "Soldier"]
+text = "*Commander* - **Action**: Choose a player to draw 1 card. (Limit once per round.)"
+flavor_text = '''"It's my job to protect the Earth and everyone on it."'''
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [11]
+[[card.product.set]]
+name = "Captain Marvel (Carol Danvers)"
+positions = [1]
+[[card.side]]
+name = "Spider-Woman"
+subname = "Jessica Drew"
+type = "Ally"
+unique = true
+cost = "3"
+thw = "2"
+thw_consequential = 1
+atk = "2"
+atk_consequential = 1
+hit_points = "2"
+traits = ["Avenger", "Spy"]
+resources = [":wild:"]
+text = "**Response**: After Spider-Woman enters play, confuse the villain."
+flavor_text = '"This is what I wanted: helping the innocent by hospitalizing the guilty."'
+
+[[card]]
+[[card.product]]
+code = "MC10en"
+positions = [12]
+[[card.product.set]]
+name = "Captain Marvel (Carol Danvers)"
+positions = [2, 3, 4]
+[[card.side]]
+name = "Crisis Interdiction"
+type = "Event"
+cost = "2"
+traits = ["Thwart"]
+resources = [":energy:"]
+text = "**Hero Action** *(thawrt)*: Remove 2 threat from a scheme. Then, if you have the ***AERIAL*** trait, remove 2 threat from a different scheme."
+flavor_text = '''"This is one of the more impressive messes I've ever seen." -Carol Danvers'''
+
+[[card]]
+[[card.product]]
+code = "MC10en"
+positions = [13]
+[[card.product.set]]
+name = "Captain Marvel (Carol Danvers)"
+positions = [5, 6, 7]
+[[card.side]]
+name = "Photonic Blast"
+type = "Event"
+cost = "3"
+traits = ["Attack", "Superpower"]
+resources = [":physical:"]
+text = "**Hero Action** *(attack)*: Deal 5 damage to an enemy. If you paid for this card using a :energy resource, draw 1 card."
+
+[[card]]
+[[card.product]]
+code = "MC10en"
+positions = [14]
+[[card.product.set]]
+name = "Captain Marvel (Carol Danvers)"
+positions = [8, 9]
+[[card.side]]
+name = "Energy Absorption"
+type = "Resource"
+resources = [":energy:", ":energy:", ":energy:"]
+flavor_text = '''"That's enough!" -Captain Marvel'''
+
+[[card]]
+[[card.product]]
+code = "MC10en"
+positions = [15]
+[[card.product.set]]
+name = "Captain Marvel (Carol Danvers)"
+positions = [10]
+[[card.side]]
+name = "Alpha Flight Station"
+type = "Support"
+unique = true
+cost = "1"
+traits = ["Location", "S.H.I.E.L.D."]
+resources = [":mental:"]
+text = "**Action**: Exhaust Alpha Flight Station, choose and discard 1 card from your hand -> draw 1 card (draw 2 cards instead if you are Carol Danvers)."
+flavor_text = "This low-orbit space station can beam cargo and crew to and from the Triskellion"
+
+[[card]]
+[[card.product]]
+code = "MC10en"
+positions = [16]
+[[card.product.set]]
+name = "Captain Marvel (Carol Danvers)"
+positions = [11]
+[[card.side]]
+name = "Captain Marvel's Helmet"
+type = "Upgrade"
+unique = true
+cost = "2"
+traits = ["Armor", "Tech"]
+resources = [":physical:"]
+text = "Captain Marvel gets +1 DEF (+2 DEF insetad if you have the ***AERIAL*** trait)."
+flavor_text = '"This is so cool!" -Jessica Drew'
+
+[[card]]
+[[card.product]]
+code = "MC10en"
+positions = [17]
+[[card.product.set]]
+name = "Captain Marvel (Carol Danvers)"
+positions = [12, 13]
+[[card.side]]
+name = "Cosmic Flight"
+type = "Upgrade"
+cost = "2"
+traits = ["Superpower"]
+resources = [":energy:"]
+text = """
+Captain Marvel gains the ***AERIAL*** trait.
+
+**Hero Interrupt** *(defense)*: When Captain Marvel would take damage, discard Cosmic Flight -> prevent 3 of that damage.
+"""
+
+[[card]]
+[[card.product]]
+code = "MC10en"
+positions = [18]
+[[card.product.set]]
+name = "Captain Marvel (Carol Danvers)"
+positions = [14, 15]
+[[card.side]]
+name = "Energy Channel"
+type = "Upgrade"
+cost = "0"
+traits = ["Superpower"]
+resources = [":mental:"]
+text = """
+Max 1 per player.
+
+**Action**: Spend X :energy: resources -> put X energy counters here.
+
+**Hero Action**: *(attack)*: Discard Energy Channel -> deal 2 damage to an enemy (to a maximum of 10) for each energy counter here.
+"""
+
+[[card]]
 aspect = "Basic"
 [[card.product]]
 code = "MC01en"

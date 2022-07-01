@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::card::{Keyword, Resource, SideSchemeIcon, Trait};
+use crate::card::{Cost, Keyword, Resource, SideSchemeIcon, Trait};
 
 #[derive(Deserialize)]
 pub struct CardSide {
@@ -44,7 +44,7 @@ pub enum CardSideVariant {
     Ally {
         subname: Option<String>,
         unique: bool,
-        cost: String,
+        cost: Cost,
         thw: String,
         thw_consequential: u32,
         atk: String,
@@ -55,7 +55,7 @@ pub enum CardSideVariant {
         resources: Vec<Resource>,
     },
     Event {
-        cost: String,
+        cost: Cost,
         #[serde(default)]
         traits: Vec<Trait>,
         resources: Vec<Resource>,
@@ -64,7 +64,7 @@ pub enum CardSideVariant {
         resources: Vec<Resource>,
     },
     Support {
-        cost: String,
+        cost: Cost,
         #[serde(default)]
         unique: bool,
         #[serde(default)]
@@ -72,7 +72,7 @@ pub enum CardSideVariant {
         resources: Vec<Resource>,
     },
     Upgrade {
-        cost: String,
+        cost: Cost,
         #[serde(default)]
         unique: bool,
         resources: Vec<Resource>,

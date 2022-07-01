@@ -1,10 +1,12 @@
 use card_side::CardSide;
 use serde::Deserialize;
 
+mod cost;
 mod keyword;
 mod r#trait;
 
 pub mod card_side;
+pub use cost::Cost;
 pub use keyword::Keyword;
 pub use r#trait::Trait;
 

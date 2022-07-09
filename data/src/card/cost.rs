@@ -37,7 +37,7 @@ mod tests {
 
     #[test]
     fn it_parses_number() {
-        let result: Result<Document, toml::de::Error> = toml::from_str(r#"cost = "3""#);
+        let result: Result<Document, _> = toml::from_str(r#"cost = "3""#);
         let doc = result.unwrap();
 
         assert_eq!(Cost::Number(3), doc.cost);
@@ -45,7 +45,7 @@ mod tests {
 
     #[test]
     fn it_parses_x() {
-        let result: Result<Document, toml::de::Error> = toml::from_str(r#"cost = "X""#);
+        let result: Result<Document, _> = toml::from_str(r#"cost = "X""#);
         let doc = result.unwrap();
 
         assert_eq!(Cost::X, doc.cost);

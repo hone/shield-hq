@@ -40,10 +40,7 @@ impl<'de> Deserialize<'de> for Keyword {
                 )
             })?;
             let value = cap_value.as_str().parse::<u8>().map_err(|_| {
-                de::Error::invalid_value(
-                    Unexpected::Str(&s),
-                    &format!("'X', where X is a number.").as_str(),
-                )
+                de::Error::invalid_value(Unexpected::Str(&s), &"'X', where X is a number.")
             })?;
 
             match keyword.as_str() {
@@ -62,13 +59,12 @@ mod tests {
     use super::*;
 
     #[derive(Debug, Deserialize)]
-    struct KeywordDocument {
+    struct Document {
         pub keywords: Vec<Keyword>,
     }
 
     fn toml_keyword(keyword: &str) -> Keyword {
-        let result: Result<KeywordDocument, _> =
-            toml::from_str(&format!(r#"keywords = ["{keyword}"]"#));
+        let result: Result<Document, _> = toml::from_str(&format!(r#"keywords = ["{keyword}"]"#));
         assert!(result.is_ok());
 
         let mut document = result.unwrap();

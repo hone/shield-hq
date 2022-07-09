@@ -29,9 +29,9 @@ impl<'de> Visitor<'de> for BasicPowerVisitor {
         if let Ok(num) = value.parse::<u8>() {
             Ok(BasicPower::Number(num))
         } else {
-            Err(de::Error::invalid_type(
+            Err(de::Error::invalid_value(
                 Unexpected::Str(value),
-                &"is not an Integer",
+                &"is not a Number",
             ))
         }
     }

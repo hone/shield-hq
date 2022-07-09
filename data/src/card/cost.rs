@@ -1,7 +1,41 @@
 use serde::{
-    de::{self, Deserializer},
+    de::{self, Deserializer, Unexpected, Visitor},
     Deserialize,
 };
+use std::fmt;
+
+struct CostVisitor;
+
+impl<'de> Visitor<'de> for CostVisitor {
+    type Value = Cost;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("not a Number or X")
+    }
+
+    fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
+    where
+        E: de::Error,
+    {
+        Ok(Cost::Number(value as u8))
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: de::Error,
+    {
+        if let Ok(num) = value.parse::<u8>() {
+            Ok(Cost::Number(num))
+        } else if value == "X" {
+            Ok(Cost::X)
+        } else {
+            Err(de::Error::invalid_value(
+                Unexpected::Str(value),
+                &"is not a Number or X",
+            ))
+        }
+    }
+}
 
 #[derive(Debug, PartialEq)]
 pub enum Cost {
@@ -14,15 +48,7 @@ impl<'de> Deserialize<'de> for Cost {
     where
         D: Deserializer<'de>,
     {
-        let s = String::deserialize(deserializer)?;
-
-        if let Ok(number) = s.parse::<u8>() {
-            Ok(Cost::Number(number))
-        } else if s == "X" {
-            Ok(Cost::X)
-        } else {
-            Err(de::Error::unknown_variant(&s, &["Number", "X"]))
-        }
+        deserializer.deserialize_any(CostVisitor)
     }
 }
 
@@ -37,6 +63,14 @@ mod tests {
 
     #[test]
     fn it_parses_number() {
+        let result: Result<Document, _> = toml::from_str(r#"cost = 3"#);
+        let doc = result.unwrap();
+
+        assert_eq!(Cost::Number(3), doc.cost);
+    }
+
+    #[test]
+    fn it_parses_number_from_string() {
         let result: Result<Document, _> = toml::from_str(r#"cost = "3""#);
         let doc = result.unwrap();
 

@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::card::{BasicPower, Cost, Keyword, Resource, SideSchemeIcon, Trait};
+use crate::card::{BasicPower, Cost, HitPoints, Keyword, Resource, SideSchemeIcon, Trait};
 
 #[derive(Deserialize)]
 pub struct CardSide {
@@ -26,7 +26,7 @@ pub enum CardSideVariant {
         atk: BasicPower,
         def: BasicPower,
         hand_size: u32,
-        hit_points: String,
+        hit_points: HitPoints,
         #[serde(default)]
         traits: Vec<Trait>,
     },
@@ -37,7 +37,7 @@ pub enum CardSideVariant {
         unique: bool,
         rec: BasicPower,
         hand_size: u32,
-        hit_points: String,
+        hit_points: HitPoints,
         #[serde(default)]
         traits: Vec<Trait>,
     },
@@ -49,7 +49,7 @@ pub enum CardSideVariant {
         thw_consequential: u32,
         atk: BasicPower,
         atk_consequential: u32,
-        hit_points: String,
+        hit_points: HitPoints,
         #[serde(default)]
         traits: Vec<Trait>,
         resources: Vec<Resource>,
@@ -81,7 +81,7 @@ pub enum CardSideVariant {
         unique: bool,
         sch: BasicPower,
         atk: BasicPower,
-        hit_points: String,
+        hit_points: HitPoints,
         #[serde(default)]
         traits: Vec<Trait>,
         #[serde(default)]

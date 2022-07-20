@@ -3,12 +3,14 @@ use serde::Deserialize;
 
 mod basic_power;
 mod cost;
+mod hit_points;
 mod keyword;
 mod r#trait;
 
 pub mod card_side;
 pub use basic_power::BasicPower;
 pub use cost::Cost;
+pub use hit_points::HitPoints;
 pub use keyword::Keyword;
 pub use r#trait::Trait;
 

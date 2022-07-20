@@ -32,7 +32,7 @@ pub enum CardSideVariant {
     },
     #[serde(rename = "Alter-Ego")]
     AterEgo {
-        side: String,
+        side: Side,
         #[serde(default)]
         unique: bool,
         rec: BasicPower,

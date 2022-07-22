@@ -3,7 +3,7 @@
 code = "MC01en"
 positions = [1]
 [[card.product.set]]
-name = "Spider-Man (Peter Parker)"
+name = "Spider-Man"
 [[card.side]]
 side = "A"
 name = "Spider-Man"
@@ -35,7 +35,7 @@ illustrators = ["Gabriel Eltaeb"]
 code = "MC01en"
 positions = [2]
 [[card.product.set]]
-name = "Spider-Man (Peter Parker)"
+name = "Spider-Man"
 positions = [1]
 [[card.side]]
 name = "Black Cat"
@@ -58,7 +58,7 @@ flavor_text = "I'm not a hero. I'm a thief."
 code = "MC01en"
 positions = [3]
 [[card.product.set]]
-name = "Spider-Man (Peter Parker)"
+name = "Spider-Man"
 positions = [2, 3]
 [[card.side]]
 name = "Backflip"
@@ -75,7 +75,7 @@ illustrators = ["Steve Ellis"]
 code = "MC01en"
 positions = [4]
 [[card.product.set]]
-name = "Spider-Man (Peter Parker)"
+name = "Spider-Man"
 positions = [4, 5]
 [[card.side]]
 name = "Enhanced Spider-Sense"
@@ -91,7 +91,7 @@ flavor_text = '"My spider-sense is tingling!" -Spider-Man'
 code = "MC01en"
 positions = [5]
 [[card.product.set]]
-name = "Spider-Man (Peter Parker)"
+name = "Spider-Man"
 positions = [6, 7, 8]
 [[card.side]]
 name = "Swinging Web Kick"
@@ -107,7 +107,7 @@ flavor_text = '"Tally-ho!" -Spider-Man'
 code = "MC01en"
 positions = [6]
 [[card.product.set]]
-name = "Spider-Man (Peter Parker)"
+name = "Spider-Man"
 positions = [9]
 [[card.side]]
 name = "Aunt May"
@@ -124,7 +124,7 @@ flavor_text = '''"Goodness, Peter! You've been so clumsy lately."'''
 code = "MC01en"
 positions = [7]
 [[card.product.set]]
-name = "Spider-Man (Peter Parker)"
+name = "Spider-Man"
 positions = [10, 11]
 [[card.side]]
 name = "Spider-Tracer"
@@ -143,7 +143,7 @@ Attach to a minion.
 code = "MC01en"
 positions = [8]
 [[card.product.set]]
-name = "Spider-Man (Peter Parker)"
+name = "Spider-Man"
 positions = [12, 13]
 [[card.side]]
 name = "Web-Shooter"
@@ -162,7 +162,7 @@ Use (3 web counters). *(Enters play with 3 counters. When those are gone, discar
 code = "MC01en"
 positions = [9]
 [[card.product.set]]
-name = "Spider-Man (Peter Parker)"
+name = "Spider-Man"
 positions = [14, 15]
 [[card.side]]
 name = "Webbed Up"
@@ -181,7 +181,7 @@ Hero form only. Attach to an enemy.
 code = "MC01en"
 positions = [10]
 [[card.product.set]]
-name = "Captain Marvel (Carol Danvers)"
+name = "Captain Marvel"
 [[card.side]]
 side = "A"
 name = "Captain Marvel"
@@ -214,7 +214,7 @@ flavor_text = '''"It's my job to protect the Earth and everyone on it."'''
 code = "MC01en"
 positions = [11]
 [[card.product.set]]
-name = "Captain Marvel (Carol Danvers)"
+name = "Captain Marvel"
 positions = [1]
 [[card.side]]
 name = "Spider-Woman"
@@ -234,10 +234,10 @@ flavor_text = '"This is what I wanted: helping the innocent by hospitalizing the
 
 [[card]]
 [[card.product]]
-code = "MC10en"
+code = "MC01en"
 positions = [12]
 [[card.product.set]]
-name = "Captain Marvel (Carol Danvers)"
+name = "Captain Marvel"
 positions = [2, 3, 4]
 [[card.side]]
 name = "Crisis Interdiction"
@@ -250,10 +250,10 @@ flavor_text = '''"This is one of the more impressive messes I've ever seen." -Ca
 
 [[card]]
 [[card.product]]
-code = "MC10en"
+code = "MC01en"
 positions = [13]
 [[card.product.set]]
-name = "Captain Marvel (Carol Danvers)"
+name = "Captain Marvel"
 positions = [5, 6, 7]
 [[card.side]]
 name = "Photonic Blast"
@@ -265,10 +265,10 @@ text = "**Hero Action** *(attack)*: Deal 5 damage to an enemy. If you paid for t
 
 [[card]]
 [[card.product]]
-code = "MC10en"
+code = "MC01en"
 positions = [14]
 [[card.product.set]]
-name = "Captain Marvel (Carol Danvers)"
+name = "Captain Marvel"
 positions = [8, 9]
 [[card.side]]
 name = "Energy Absorption"
@@ -278,10 +278,10 @@ flavor_text = '''"That's enough!" -Captain Marvel'''
 
 [[card]]
 [[card.product]]
-code = "MC10en"
+code = "MC01en"
 positions = [15]
 [[card.product.set]]
-name = "Captain Marvel (Carol Danvers)"
+name = "Captain Marvel"
 positions = [10]
 [[card.side]]
 name = "Alpha Flight Station"
@@ -295,10 +295,10 @@ flavor_text = "This low-orbit space station can beam cargo and crew to and from 
 
 [[card]]
 [[card.product]]
-code = "MC10en"
+code = "MC01en"
 positions = [16]
 [[card.product.set]]
-name = "Captain Marvel (Carol Danvers)"
+name = "Captain Marvel"
 positions = [11]
 [[card.side]]
 name = "Captain Marvel's Helmet"
@@ -312,10 +312,10 @@ flavor_text = '"This is so cool!" -Jessica Drew'
 
 [[card]]
 [[card.product]]
-code = "MC10en"
+code = "MC01en"
 positions = [17]
 [[card.product.set]]
-name = "Captain Marvel (Carol Danvers)"
+name = "Captain Marvel"
 positions = [12, 13]
 [[card.side]]
 name = "Cosmic Flight"
@@ -331,10 +331,10 @@ Captain Marvel gains the ***AERIAL*** trait.
 
 [[card]]
 [[card.product]]
-code = "MC10en"
+code = "MC01en"
 positions = [18]
 [[card.product.set]]
-name = "Captain Marvel (Carol Danvers)"
+name = "Captain Marvel"
 positions = [14, 15]
 [[card.side]]
 name = "Energy Channel"
@@ -430,7 +430,7 @@ text = "When Revealed: Stun your hero. If Vulture is in play, this card gains su
 code = "MC01en"
 positions = [169]
 [[card.product.set]]
-name = "The Vulture's Plans"
+name = "Spider-Man Nemesis"
 positions = [5]
 [[card.side]]
 name = "The Vulture's Plan"

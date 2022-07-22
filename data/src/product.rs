@@ -2,8 +2,8 @@ use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct Document {
-    #[serde(default)]
-    pub product: Vec<Product>,
+    #[serde(rename = "product")]
+    pub products: Vec<Product>,
 }
 
 #[derive(Deserialize)]
@@ -14,8 +14,8 @@ pub struct Product {
     pub r#type: ProductType,
     pub code: String,
     pub wave: u32,
-    #[serde(default)]
-    pub set: Vec<Set>,
+    #[serde(default, rename = "set")]
+    pub sets: Vec<Set>,
 }
 
 #[derive(Deserialize)]

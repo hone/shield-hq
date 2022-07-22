@@ -17,14 +17,17 @@ pub use r#trait::Trait;
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Document {
-    pub card: Vec<Card>,
+    #[serde(rename = "card")]
+    pub cards: Vec<Card>,
 }
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Card {
-    pub product: Vec<CardProduct>,
-    pub side: Vec<CardSide>,
+    #[serde(rename = "product")]
+    pub products: Vec<CardProduct>,
+    #[serde(rename = "side")]
+    pub sides: Vec<CardSide>,
     pub aspect: Option<Aspect>,
 }
 
@@ -33,7 +36,8 @@ pub struct Card {
 pub struct CardProduct {
     pub code: String,
     pub positions: Vec<u32>,
-    pub set: Option<Vec<CardSet>>,
+    #[serde(rename = "set")]
+    pub sets: Option<Vec<CardSet>>,
 }
 
 #[derive(Deserialize)]
@@ -88,11 +92,38 @@ pub enum SideSchemeIcon {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::product;
 
     #[test]
     fn it_parses_cards() {
+        let product_document: Result<product::Document, _> =
+            toml::from_str(include_str!("../data/products.toml"));
+
         let document: Result<Document, _> = toml::from_str(include_str!("../data/core-set.toml"));
 
-        document.unwrap();
+        let products: Vec<product::Product> = product_document.unwrap().products;
+        let cards: Vec<Card> = document.unwrap().cards;
+
+        for card in cards.iter() {
+            for card_product in card.products.iter() {
+                // check that every card product exists
+                if let Some(product) = products
+                    .iter()
+                    .find(|product| product.code == card_product.code)
+                {
+                    if let Some(sets) = &card_product.sets {
+                        for card_set in sets.iter() {
+                            assert!(
+                                product.sets.iter().any(|set| set.name == card_set.name),
+                                "Could not find product set {}",
+                                card_set.name
+                            );
+                        }
+                    }
+                } else {
+                    panic!("Could not find product {}", card_product.code);
+                }
+            }
+        }
     }
 }

@@ -14,11 +14,23 @@ name = "Captain Marvel"
 type = "Hero Signature"
 
 [[product.set]]
+name = "She-Hulk"
+type = "Hero Signature"
+
+[[product.set]]
 name = "Rhino"
 type = "Villain"
 
 [[product.set]]
+name = "She-Hulk Nemesis"
+type = "Nemesis"
+
+[[product.set]]
 name = "Spider-Man Nemesis"
+type = "Nemesis"
+
+[[product.set]]
+name = "Captain Marvel Nemesis"
 type = "Nemesis"
 
 [[product.set]]

@@ -11,7 +11,7 @@ impl<'de> Visitor<'de> for BasicPowerVisitor {
     type Value = BasicPower;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("an unsigned integer")
+        formatter.write_str("an unsigned integer or X")
     }
 
     // toml-rs treats Integers as i64
@@ -28,10 +28,12 @@ impl<'de> Visitor<'de> for BasicPowerVisitor {
     {
         if let Ok(num) = value.parse::<u8>() {
             Ok(BasicPower::Number(num))
+        } else if value == "X" {
+            Ok(BasicPower::X)
         } else {
             Err(de::Error::invalid_value(
                 Unexpected::Str(value),
-                &"is not a Number",
+                &"is not a Number or X",
             ))
         }
     }
@@ -40,6 +42,7 @@ impl<'de> Visitor<'de> for BasicPowerVisitor {
 #[derive(Debug, PartialEq)]
 pub enum BasicPower {
     Number(u8),
+    X,
 }
 
 impl<'de> Deserialize<'de> for BasicPower {
@@ -74,5 +77,13 @@ mod tests {
         let doc = result.unwrap();
 
         assert_eq!(BasicPower::Number(1), doc.atk);
+    }
+
+    #[test]
+    fn it_parses_x() {
+        let result: Result<Document, _> = toml::from_str(r#"atk = "X""#);
+        let doc = result.unwrap();
+
+        assert_eq!(BasicPower::X, doc.atk);
     }
 }

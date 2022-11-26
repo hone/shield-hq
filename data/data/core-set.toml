@@ -351,6 +351,192 @@ Max 1 per player.
 """
 
 [[card]]
+[[card.product]]
+code = "MC01en"
+positions = [19]
+[[card.product.set]]
+name = "She-Hulk"
+[[card.side]]
+side = "A"
+name = "She-Hulk"
+type = "Hero"
+unique = true
+thw = 1
+atk = 3
+def = 2
+hand_size = 4
+hit_points = 15
+traits = ["Avenger", "Gamma"]
+text = '*"Do You Even Lift?"* - **Response**: After you change to this form, deal 2 damage to an enemy.'
+flavor_text = '''"I'm six foot seven and bright green! People are gonna stare no matter how I dress."'''
+[[card.side]]
+side = "B"
+name = "Jennifer Walters"
+type = "Alter-Ego"
+unique = true
+rec = 5
+hand_size = 6
+hit_points = 15
+traits = ["Attorney", "Gamma"]
+text = '"*I Object!*" - **Interrupt**: When threat would be placed on a scheme, prevent 1 of that threat. (Limit once per round.)'
+flavor_text = '''"I can turn into a Hulk anytime I want. But just because you can do something doesn't always mean you should."'''
+illustrators = ["Andrea Di Vito", "Laura Villari"]
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [20]
+[[card.product.set]]
+name = "She-Hulk"
+positions = [1]
+[[card.side]]
+name = "Hellcat"
+subname = "Patsy Walker"
+type = "Ally"
+unique = true
+cost = 3
+thw = 2
+thw_consequential = 1
+atk = 1
+atk_consequential = 1
+hit_points = 3
+traits = ["Avenger"]
+resources = [":wild:"]
+text = "**Action**: Return Hellcat to your hand."
+flavor_text = '"Turn around, gentlemen, and meet-the Hellcat!"'
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [21]
+[[card.product.set]]
+name = "She-Hulk"
+positions = [2]
+[[card.side]]
+name = "Gamma Slam"
+type = "Event"
+cost = 4
+traits = ["Attack", "Superpower"]
+resources = [":mental:"]
+text = "**Hero Action** *(attack)*: Deal X damage to an enemy (to a maximum of 15). X is the amount of damage you have sustained."
+flavor_text = '"You messed with the wrong woman!" -She-Hulk'
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [22]
+[[card.product.set]]
+name = "She-Hulk"
+positions = [3, 4]
+[[card.side]]
+name = "Ground Stomp"
+type = "Event"
+cost = 2
+traits = ["Superpower"]
+resources = [":mental:"]
+text = "**Heroku ACtion**: Deal 1 damage to each enemy."
+flavor_text = '''"These boots were made for stompin'." -She-Hulk'''
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [23]
+[[card.product.set]]
+name = "She-Hulk"
+positions = [5, 6]
+[[card.side]]
+name = "Legal Practice"
+type = "Event"
+cost = 0
+traits = ["Skill", "Thwart"]
+resources = [":physical:"]
+text = "**Alter-Ego Action** *(thwart)*: Choose and discard up to 5 cards from your hand -> remove 1 threat from a scheme for each card discarded this way."
+flavor_text = '''"That's the first time I've ever seen someone argue their way out of a fight." -Spider-Man'''
+illustrators = ["Gabriel Eltaeb"]
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [24]
+[[card.product.set]]
+name = "She-Hulk"
+positions = [7, 8, 9]
+[[card.side]]
+name = "One-Two Punch"
+type = "Event"
+cost = 1
+traits = ["Skill"]
+resources = [":physical:"]
+text = "**Response**: After you make a basic attack *(using your ATK)*, ready She-Hulk."
+flavor_text = '''"I just don't care for men with fresh mouths." -Jennifer Walters'''
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [25]
+[[card.product.set]]
+name = "She-Hulk"
+positions = [10]
+[[card.side]]
+name = "Split Personality"
+type = "Event"
+cost = 3
+resources = [":energy:"]
+text = "**Action**: Change your form *(flip your identity card)*. Then, draw up to your printed hand size."
+flavor_text = '''"I know a thing or two about rage. And that kind of fury...it's not going to pass without taking someone with it." -Jennifer Walters'''
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [26]
+[[card.product.set]]
+name = "She-Hulk"
+positions = [11]
+[[card.side]]
+name = "Superhuman Law Division"
+type = "Support"
+cost = 1
+traits = ["Location"]
+resources = [":physical:"]
+text = "**Alter-Ego Action** *(thwart)*: Exhaust Superhuman Law Division and spend a :mental: resource -> remove 2 threat from a scheme."
+flavor_text = '''"I'll be sending you a bill. My time is valuable these days." -Jennifer Walters'''
+illustrators = ["Steve Ellis"]
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [27]
+[[card.product.set]]
+name = "She-Hulk"
+positions = [12, 13]
+[[card.side]]
+name = "Focused Rage"
+type = "Upgrade"
+cost = 3
+traits = ["Skill"]
+resources = [":energy:"]
+text = "**Hero Action**: Exhaust Focused Rage and take 1 damage -> draw 1 card."
+flavor_text = '''"Like Bruce, I thought I could control my power. My rage." -Jennifer Walters'''
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [28]
+[[card.product.set]]
+name = "She-Hulk"
+positions = [14, 15]
+[[card.side]]
+name = "Superhuman Strength"
+type = "Upgrade"
+cost = 2
+traits = ["Superpower"]
+resources = [":mental:"]
+text = """
+She-Hulk gets +2 ATK.
+**Forced Response**: After She-Hulk attacks, discard Superhuman Strength -> stun the attacked enemy.
+"""
+
+[[card]]
 aspect = "Basic"
 [[card.product]]
 code = "MC01en"
@@ -374,6 +560,109 @@ flavor_text = '"You call that science?!"'
 [[card]]
 [[card.product]]
 code = "MC01en"
+positions = [160]
+[[card.product.set]]
+name = "She-Hulk"
+[[card.side]]
+name = "Legal Work"
+type = "Obligation"
+boost_icons = 2
+text = """
+**Give to the Jennifer Walters player.
+You may flip to alter-ego form. Choose:
+* Exhaust Jennifer Walters -> remove Legal Work from the game.
+* Give the main scheme 1 acceleration token. Discard this obligation
+"""
+illustrators = ["Andrea Di Vito", "Laura Villari"]
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [161]
+[[card.product.set]]
+name = "She-Hulk Nemesis"
+positions = [1]
+[[card.side]]
+name = "Personal Challenge"
+type = "Side Scheme"
+starting_threat = "3"
+boost_icons = 3
+icons = [":crisis:"]
+text = "**When Revealed**: Place an addition 1:player: threat here."
+flavor_text = "Titania has held a grudge against She-Hulk for years. She won't rest until she settles the score."
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [162]
+[[card.product.set]]
+name = "She-Hulk Nemesis"
+positions = [2]
+[[card.side]]
+name = "Titania"
+type = "Minion"
+unique = true
+sch = 1
+atk = "X"
+hit_points = 6
+traits = ["Brute", "Elite"]
+boost_icons = 2
+text = "X is equal to Titania's remaining hit points."
+flavor_text = '''"Face it, Greenie. There's only room for one strongest woman... and it ain't you!"'''
+illustrators = ["Andrea Di Vito", "Laura Villari"]
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [163]
+[[card.product.set]]
+name = "She-Hulk Nemesis"
+positions = [3]
+[[card.side]]
+name = "Genetically Enhanced"
+type = "Attachment"
+traits = ["Condition"]
+boost_icons = 1
+text = """
+Attach to the minion with the highest printed hit points. If there are no minions in play, this card gains surge.
+Attached minion gets +3 hit points.
+"""
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [164]
+[[card.product.set]]
+name = "She-Hulk Nemesis"
+positions = [4, 5]
+[[card.side]]
+name = "Titania's Fury"
+type = "Treachery"
+boost_icons = 1
+boost_star_icon = true
+boost_text = "Give the villian 1 additional boost card for this activation."
+text = "**When Revealed**: Titania attacks your hero. If Titania did not attack, heal all damage from Titania and this card gains surge."
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [165]
+[[card.product.set]]
+name = "Spider-Man"
+[[card.side]]
+name = "Eviction Notice"
+type = "Obligation"
+boost_icons = 2
+text = """
+Give to the Peter Parker player.
+You may flip to alter-ego form. Choose one:
+* Exhaust Peter Parker -> remove Eviction Notice from the game.
+* Discard 1 card at random from your hand. This card gains surge. Discard this obligation.
+"""
+
+[[card]]
+[[card.product]]
+code = "MC01en"
 positions = [166]
 [[card.product.set]]
 name = "Spider-Man Nemesis"
@@ -381,14 +670,13 @@ positions = [1]
 [[card.side]]
 name = "Highway Robbery"
 type = "Side Scheme"
-text = """
-When Revealed: Each player places a random card from their hand facedown here.
-
-When Defeated: Return each facedown card here to its owner's hand.
-"""
-icons = [":acceleration:"]
 starting_threat = "3:player:"
 boost_icons = 3
+icons = [":acceleration:"]
+text = """
+**When Revealed**: Each player places a random card from their hand facedown here.
+**When Defeated**: Return each facedown card here to its owner's hand.
+"""
 illustrators = ["Steve Ellis"]
 
 [[card]]
@@ -407,7 +695,7 @@ atk = 3
 hit_points = 4
 traits = ["Criminal"]
 boost_icons = 2
-text = "Quickstrike. (After this minion engages your hero, it attacks.)"
+text = "Quickstrike. *(After this minion engages your hero, it attacks.)*"
 flavor_text = '''"I'm faster, stronger, and smarter than a hundred men my age!"'''
 keywords = ["Quickstrike"]
 
@@ -423,7 +711,7 @@ name = "Sweeping Swoop"
 type = "Treachery"
 boost_star_icon = true
 boost_text = "If this activation deals damage to a friendly character, stun that character."
-text = "When Revealed: Stun your hero. If Vulture is in play, this card gains surge."
+text = "**When Revealed**: Stun your hero. If Vulture is in play, this card gains surge."
 
 [[card]]
 [[card.product]]
@@ -436,5 +724,53 @@ positions = [5]
 name = "The Vulture's Plan"
 type = "Treachery"
 boost_icons = 2
-text = "When Revealed: Discard 1 card at random from each player's hand. Place 1 threat on the main scheme for each different resource type discarded this way."
+text = "**When Revealed**: Discard 1 card at random from each player's hand. Place 1 threat on the main scheme for each different resource type discarded this way."
 flavor_text = '"Spider-Man will pay for interfering with my plans!" -The Vulturer'
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [175]
+[[card.product.set]]
+name = "Captain Marvel"
+[[card.side]]
+name = "Family Emergency"
+type = "Obligation"
+boost_icons = 2
+text = """
+Give to the Carol Danvers player.
+You may flip to alter-ego form. Choose:
+* Exhaust Carol Danvers -> remove Family Emergency from the game.
+* You are stunned. This card gains surge. Discard this obligation.
+"""
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [176]
+[[card.product.set]]
+name = "Captain Marvel Nemesis"
+positions = [1]
+[[card.side]]
+name = "The Psyche-Magnitron"
+type = "Side Scheme"
+starting_threat = 3
+boost_icons = 3
+icons = [":hazard:"]
+text = "**When Revealed**: Place an additional 1:player: threat here."
+flavor_text = "The Psyche-Magnitron is a Kree device with the power to turn thoughts into reality. In the hands of Yon-Rogg, it would be a devastating weapon."
+illustrators = ["Steve Ellis"]
+
+[[card]]
+[[card.product]]
+code = "MC01en"
+positions = [177]
+[[card.product.set]]
+name = "Captain Marvel Nemesis"
+positions = [2]
+[[card.side]]
+name = "Yon-Rogg"
+type = "Minion"
+unique = true
+sch = 2
+atk = "3*"

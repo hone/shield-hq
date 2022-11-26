@@ -60,6 +60,10 @@ pub enum CardSideVariant {
         traits: Vec<Trait>,
         resources: Vec<Resource>,
     },
+    Obligation {
+        #[serde(default)]
+        boost_icons: u32,
+    },
     Resource {
         resources: Vec<Resource>,
     },
@@ -77,6 +81,9 @@ pub enum CardSideVariant {
         unique: bool,
         resources: Vec<Resource>,
     },
+    Attachment {
+        boost_icons: u8,
+    },
     Minion {
         unique: bool,
         sch: BasicPower,
@@ -89,6 +96,7 @@ pub enum CardSideVariant {
         #[serde(default)]
         boost_star_icon: bool,
         boost_text: Option<String>,
+        #[serde(default)]
         keywords: Vec<Keyword>,
     },
     #[serde(rename = "Side Scheme")]

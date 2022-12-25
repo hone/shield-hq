@@ -1,9 +1,11 @@
+use juniper::{graphql_scalar, ParseScalarResult, ParseScalarValue, Value};
 use serde::{
     self,
     de::{self, Deserializer, Unexpected, Visitor},
     Deserialize,
 };
-use std::fmt;
+use std::{fmt, str::FromStr};
+use thiserror::Error;
 
 struct BasicPowerVisitor;
 
@@ -26,23 +28,43 @@ impl<'de> Visitor<'de> for BasicPowerVisitor {
     where
         E: de::Error,
     {
-        if let Ok(num) = value.parse::<u8>() {
-            Ok(BasicPower::Number(num))
-        } else if value == "X" {
-            Ok(BasicPower::X)
-        } else {
-            Err(de::Error::invalid_value(
-                Unexpected::Str(value),
-                &"is not a Number or X",
-            ))
-        }
+        <BasicPower as FromStr>::from_str(value)
+            .map_err(|_| de::Error::invalid_value(Unexpected::Str(value), &"is not a Number or X"))
     }
 }
+
+#[derive(Debug, Error, PartialEq)]
+#[error("{0} is not a Number or X")]
+pub struct ParseBasicPowerError(String);
 
 #[derive(Debug, PartialEq)]
 pub enum BasicPower {
     Number(u8),
     X,
+}
+
+impl fmt::Display for BasicPower {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let str = match self {
+            BasicPower::Number(n) => n.to_string(),
+            BasicPower::X => String::from("X"),
+        };
+        write!(f, "{str}")
+    }
+}
+
+impl FromStr for BasicPower {
+    type Err = ParseBasicPowerError;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        if let Ok(num) = value.parse::<u8>() {
+            Ok(BasicPower::Number(num))
+        } else if value == "X" {
+            Ok(BasicPower::X)
+        } else {
+            Err(ParseBasicPowerError(String::from(value)))
+        }
+    }
 }
 
 impl<'de> Deserialize<'de> for BasicPower {
@@ -51,6 +73,28 @@ impl<'de> Deserialize<'de> for BasicPower {
         D: Deserializer<'de>,
     {
         deserializer.deserialize_any(BasicPowerVisitor)
+    }
+}
+
+#[graphql_scalar]
+impl<S> GraphQLScalar for BasicPower
+where
+    S: ScalarValue,
+{
+    fn resolve(&self) -> Value {
+        Value::scalar(self.to_string())
+    }
+
+    fn from_input_value(value: InputValue) -> Option<BasicPower> {
+        if let Some(s) = value.as_string_value() {
+            <BasicPower as FromStr>::from_str(&s).ok()
+        } else {
+            None
+        }
+    }
+
+    fn from_str<'a>(value: ScalarToken<'a>) -> ParseScalarResult<'a, S> {
+        <String as ParseScalarValue<S>>::from_str(value)
     }
 }
 
@@ -85,5 +129,18 @@ mod tests {
         let doc = result.unwrap();
 
         assert_eq!(BasicPower::X, doc.atk);
+    }
+
+    #[test]
+    fn it_parses_number_from_str() {
+        assert_eq!(
+            Ok(BasicPower::Number(1)),
+            <BasicPower as FromStr>::from_str("1")
+        );
+    }
+
+    #[test]
+    fn it_parses_x_from_str() {
+        assert_eq!(Ok(BasicPower::X), <BasicPower as FromStr>::from_str("X"));
     }
 }

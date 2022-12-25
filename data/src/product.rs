@@ -1,3 +1,5 @@
+use crate::graphql::SHQScalarValue;
+use juniper::{GraphQLEnum, GraphQLObject};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -6,7 +8,8 @@ pub struct Document {
     pub products: Vec<Product>,
 }
 
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize, GraphQLObject)]
+#[graphql(scalar = SHQScalarValue)]
 #[serde(deny_unknown_fields)]
 pub struct Product {
     pub name: String,
@@ -18,7 +21,7 @@ pub struct Product {
     pub sets: Vec<Set>,
 }
 
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize, GraphQLEnum)]
 pub enum ProductType {
     #[serde(rename = "Core Set")]
     CoreSet,
@@ -31,13 +34,13 @@ pub enum ProductType {
     Custom,
 }
 
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize, GraphQLObject)]
 pub struct Set {
     pub name: String,
     pub r#type: SetType,
 }
 
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize, GraphQLEnum)]
 pub enum SetType {
     #[serde(rename = "Hero Signature")]
     HeroSignature,

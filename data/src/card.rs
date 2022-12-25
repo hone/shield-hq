@@ -1,4 +1,6 @@
+use crate::graphql::SHQScalarValue;
 use card_side::CardSide;
+use juniper::{GraphQLEnum, GraphQLObject};
 use serde::Deserialize;
 
 mod basic_power;
@@ -31,7 +33,8 @@ pub struct Card {
     pub aspect: Option<Aspect>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, GraphQLObject)]
+#[graphql(scalar = SHQScalarValue)]
 #[serde(deny_unknown_fields)]
 pub struct CardProduct {
     pub code: String,
@@ -40,14 +43,15 @@ pub struct CardProduct {
     pub sets: Option<Vec<CardSet>>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, GraphQLObject)]
+#[graphql(scalar = SHQScalarValue)]
 #[serde(deny_unknown_fields)]
 pub struct CardSet {
     pub name: String,
     pub positions: Option<Vec<u32>>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, GraphQLEnum)]
 pub enum Aspect {
     Basic,
     Aggression,
@@ -56,7 +60,7 @@ pub enum Aspect {
     Justice,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, GraphQLEnum)]
 pub enum CardType {
     Ally,
     Attachment,
@@ -67,7 +71,7 @@ pub enum CardType {
     Upgrade,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, GraphQLEnum)]
 pub enum Resource {
     #[serde(rename = ":energy:")]
     Energy,
@@ -79,7 +83,7 @@ pub enum Resource {
     Wild,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, GraphQLEnum)]
 pub enum SideSchemeIcon {
     #[serde(rename = ":acceleration:")]
     Acceleration,

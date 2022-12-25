@@ -1,8 +1,9 @@
+use juniper::{graphql_object, GraphQLEnum, GraphQLObject};
 use serde::Deserialize;
 
 use crate::card::{BasicPower, Cost, HitPoints, Keyword, Resource, SideSchemeIcon, Trait};
 
-#[derive(Deserialize)]
+#[derive(Deserialize, GraphQLObject)]
 pub struct CardSide {
     pub name: String,
     pub text: Option<String>,
@@ -120,7 +121,17 @@ pub enum CardSideVariant {
     },
 }
 
-#[derive(Deserialize)]
+#[graphql_object]
+impl CardSideVariant {
+    fn thw(&self) -> Option<&BasicPower> {
+        match self {
+            CardSideVariant::Hero { thw, .. } => Some(thw),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Deserialize, GraphQLEnum)]
 pub enum Side {
     A,
     B,

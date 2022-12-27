@@ -23,7 +23,8 @@ pub struct Document {
     pub cards: Vec<Card>,
 }
 
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize, GraphQLObject)]
+#[graphql(scalar = SHQScalarValue)]
 #[serde(deny_unknown_fields)]
 pub struct Card {
     #[serde(rename = "product")]
@@ -33,7 +34,7 @@ pub struct Card {
     pub aspect: Option<Aspect>,
 }
 
-#[derive(Deserialize, GraphQLObject)]
+#[derive(Clone, Deserialize, GraphQLObject)]
 #[graphql(scalar = SHQScalarValue)]
 #[serde(deny_unknown_fields)]
 pub struct CardProduct {
@@ -43,7 +44,7 @@ pub struct CardProduct {
     pub sets: Option<Vec<CardSet>>,
 }
 
-#[derive(Deserialize, GraphQLObject)]
+#[derive(Clone, Deserialize, GraphQLObject)]
 #[graphql(scalar = SHQScalarValue)]
 #[serde(deny_unknown_fields)]
 pub struct CardSet {
@@ -51,7 +52,7 @@ pub struct CardSet {
     pub positions: Option<Vec<u32>>,
 }
 
-#[derive(Deserialize, GraphQLEnum)]
+#[derive(Clone, Deserialize, GraphQLEnum)]
 pub enum Aspect {
     Basic,
     Aggression,
@@ -71,7 +72,7 @@ pub enum CardType {
     Upgrade,
 }
 
-#[derive(Deserialize, GraphQLEnum)]
+#[derive(Clone, Deserialize, GraphQLEnum)]
 pub enum Resource {
     #[serde(rename = ":energy:")]
     Energy,
@@ -83,7 +84,7 @@ pub enum Resource {
     Wild,
 }
 
-#[derive(Deserialize, GraphQLEnum)]
+#[derive(Clone, Deserialize, GraphQLEnum)]
 pub enum SideSchemeIcon {
     #[serde(rename = ":acceleration:")]
     Acceleration,

@@ -3,7 +3,7 @@ use serde::Deserialize;
 
 use crate::card::{BasicPower, Cost, HitPoints, Keyword, Resource, SideSchemeIcon, Trait};
 
-#[derive(Deserialize, GraphQLObject)]
+#[derive(Clone, Deserialize, GraphQLObject)]
 pub struct CardSide {
     pub name: String,
     pub text: Option<String>,
@@ -15,7 +15,7 @@ pub struct CardSide {
     pub variant: CardSideVariant,
 }
 
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize)]
 #[serde(tag = "type")]
 #[serde(deny_unknown_fields)]
 pub enum CardSideVariant {
@@ -63,7 +63,7 @@ pub enum CardSideVariant {
     },
     Obligation {
         #[serde(default)]
-        boost_icons: u32,
+        boost_icons: u8,
     },
     Resource {
         resources: Vec<Resource>,
@@ -131,7 +131,7 @@ impl CardSideVariant {
     }
 }
 
-#[derive(Deserialize, GraphQLEnum)]
+#[derive(Clone, Deserialize, GraphQLEnum)]
 pub enum Side {
     A,
     B,

@@ -11,13 +11,13 @@ use juniper::{
 use std::{net::SocketAddr, sync::Arc};
 use tracing::info;
 
-use data::{graphql::SHQScalarValue, product::Product};
+use data::{card::Card, graphql::SHQScalarValue, product::Product};
 
 const API_VERSION: &str = "0.1";
 
 #[derive(FromRef)]
 pub struct Ctx {
-    //pub cards: Vec<Card>,
+    pub cards: Vec<Card>,
     pub products: Vec<Product>,
 }
 
@@ -35,9 +35,9 @@ impl Query {
         Ok(&context.products)
     }
 
-    //fn all_cards(context: &Ctx) -> FieldResult<&Vec<Card>> {
-    //    Ok(&context.cards)
-    //}
+    fn all_cards(context: &Ctx) -> FieldResult<&Vec<Card>> {
+        Ok(&context.cards)
+    }
 }
 
 pub type Schema =
@@ -79,9 +79,12 @@ async fn main() {
         EmptyMutation::<Ctx>::new(),
         EmptySubscription::<Ctx>::new(),
     ));
+    let cards_doc: data::card::Document =
+        toml::from_str(include_str!("../../data/data/core-set.toml")).unwrap();
     let products_doc: data::product::Document =
         toml::from_str(include_str!("../../data/data/products.toml")).unwrap();
     let ctx = Arc::new(Ctx {
+        cards: cards_doc.cards,
         products: products_doc.products,
     });
     let state = AppState { schema, ctx };

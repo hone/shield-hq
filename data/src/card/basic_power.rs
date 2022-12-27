@@ -39,7 +39,7 @@ impl<'de> Visitor<'de> for BasicPowerVisitor {
 #[error("{0} is not a Number or X")]
 pub struct ParseBasicPowerError(String);
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum BasicPower {
     Number(u8),
     Effect(u8),

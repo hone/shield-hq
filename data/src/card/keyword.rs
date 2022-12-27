@@ -16,7 +16,7 @@ pub enum ParseKeywordError {
     InvalidValueX(String),
 }
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(remote = "Keyword")]
 pub enum Keyword {
     Incite(u8),
@@ -185,11 +185,17 @@ mod tests {
 
     #[test]
     fn it_parses_quickstrike_from_str() {
-        assert_eq!(Ok(Keyword::Quickstrike), Keyword::from_str("Quickstrike"))
+        assert_eq!(
+            Ok(Keyword::Quickstrike),
+            <Keyword as FromStr>::from_str("Quickstrike")
+        )
     }
 
     #[test]
     fn it_parses_incite_from_str() {
-        assert_eq!(Ok(Keyword::Incite(1)), Keyword::from_str("Incite 1"))
+        assert_eq!(
+            Ok(Keyword::Incite(1)),
+            <Keyword as FromStr>::from_str("Incite 1")
+        )
     }
 }

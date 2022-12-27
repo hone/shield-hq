@@ -53,7 +53,7 @@ impl<'de> Visitor<'de> for HitPointsVisitor {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum HitPoints {
     Number(u8),
     PerPlayer(u8),

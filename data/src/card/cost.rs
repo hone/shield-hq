@@ -35,7 +35,7 @@ impl<'de> Visitor<'de> for CostVisitor {
 #[error("{0} is not a Number or X")]
 pub struct ParseCostError(String);
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Cost {
     Number(u8),
     X,

@@ -17,6 +17,7 @@ pub enum Trait {
     Genius,
     #[serde(rename = "Hero for Hire")]
     HeroForHire,
+    Kree,
     Item,
     Location,
     Persona,

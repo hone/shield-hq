@@ -1,4 +1,6 @@
 use juniper::{graphql_scalar, ParseScalarResult, ParseScalarValue, Value};
+use lazy_static::lazy_static;
+use regex::Regex;
 use serde::{
     self,
     de::{self, Deserializer, Unexpected, Visitor},
@@ -40,6 +42,7 @@ pub struct ParseBasicPowerError(String);
 #[derive(Debug, PartialEq)]
 pub enum BasicPower {
     Number(u8),
+    Effect(u8),
     X,
 }
 
@@ -47,6 +50,7 @@ impl fmt::Display for BasicPower {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let str = match self {
             BasicPower::Number(n) => n.to_string(),
+            BasicPower::Effect(n) => format!("{n}*"),
             BasicPower::X => String::from("X"),
         };
         write!(f, "{str}")
@@ -57,10 +61,19 @@ impl FromStr for BasicPower {
     type Err = ParseBasicPowerError;
 
     fn from_str(value: &str) -> Result<Self, Self::Err> {
+        lazy_static! {
+            static ref BASIC_POWER_RE: Regex = Regex::new(r"([\d]+)\*").unwrap();
+        }
+
         if let Ok(num) = value.parse::<u8>() {
             Ok(BasicPower::Number(num))
         } else if value == "X" {
             Ok(BasicPower::X)
+        } else if let Some(caps) = BASIC_POWER_RE.captures(&value) {
+            // b/c of the regex, this should always unwrap()
+            let cap_value = caps.get(1).unwrap();
+            let number = cap_value.as_str().parse::<u8>().unwrap();
+            Ok(BasicPower::Effect(number))
         } else {
             Err(ParseBasicPowerError(String::from(value)))
         }
@@ -121,6 +134,14 @@ mod tests {
         let doc = result.unwrap();
 
         assert_eq!(BasicPower::Number(1), doc.atk);
+    }
+
+    #[test]
+    fn it_parses_number_effects_from_string() {
+        let result: Result<Document, _> = toml::from_str(r#"atk = "3*""#);
+        let doc = result.unwrap();
+
+        assert_eq!(BasicPower::Effect(3), doc.atk);
     }
 
     #[test]

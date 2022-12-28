@@ -123,9 +123,31 @@ pub enum CardSideVariant {
 
 #[graphql_object]
 impl CardSideVariant {
+    fn unique(&self) -> Option<&bool> {
+        match self {
+            CardSideVariant::Hero { unique, .. } => Some(unique),
+            CardSideVariant::AlterEgo { unique, .. } => Some(unique),
+            CardSideVariant::Ally { unique, .. } => Some(unique),
+            CardSideVariant::Support { unique, .. } => Some(unique),
+            CardSideVariant::Upgrade { unique, .. } => Some(unique),
+            CardSideVariant::Minion { unique, .. } => Some(unique),
+            _ => None,
+        }
+    }
+
     fn thw(&self) -> Option<&BasicPower> {
         match self {
             CardSideVariant::Hero { thw, .. } => Some(thw),
+            CardSideVariant::Ally { thw, .. } => Some(thw),
+            _ => None,
+        }
+    }
+
+    fn atk(&self) -> Option<&BasicPower> {
+        match self {
+            CardSideVariant::Hero { atk, .. } => Some(atk),
+            CardSideVariant::Ally { atk, .. } => Some(atk),
+            CardSideVariant::Minion { atk, .. } => Some(atk),
             _ => None,
         }
     }

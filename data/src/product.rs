@@ -1,5 +1,6 @@
-use crate::graphql::SHQScalarValue;
-use juniper::{GraphQLEnum, GraphQLObject};
+use crate::graphql::{filter, SHQScalarValue};
+use chrono::NaiveDate;
+use juniper::{graphql_object, GraphQLEnum, GraphQLObject};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -8,12 +9,11 @@ pub struct Document {
     pub products: Vec<Product>,
 }
 
-#[derive(Clone, Deserialize, GraphQLObject)]
-#[graphql(scalar = SHQScalarValue)]
+#[derive(Clone, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Product {
     pub name: String,
-    pub release_date: chrono::naive::NaiveDate,
+    pub release_date: NaiveDate,
     pub r#type: ProductType,
     pub code: String,
     pub wave: u32,
@@ -21,7 +21,47 @@ pub struct Product {
     pub sets: Vec<Set>,
 }
 
-#[derive(Clone, Deserialize, GraphQLEnum)]
+#[graphql_object(scalar = SHQScalarValue)]
+impl Product {
+    fn name(&self) -> &str {
+        &self.name
+    }
+
+    fn release_date(&self) -> &NaiveDate {
+        &self.release_date
+    }
+
+    fn r#type(&self) -> &ProductType {
+        &self.r#type
+    }
+
+    fn code(&self) -> &str {
+        &self.code
+    }
+
+    fn wave(&self) -> u32 {
+        self.wave
+    }
+
+    fn sets(&self, name: Option<String>, r#type: Option<SetType>) -> Vec<&Set> {
+        let sets: Vec<&Set> = self.sets.iter().collect();
+
+        sets.into_iter()
+            .filter(|set| {
+                let mut filter = true;
+
+                filter!(filter,
+                    &set.name => name,
+                    &set.r#type => r#type,
+                );
+
+                filter
+            })
+            .collect::<Vec<&Set>>()
+    }
+}
+
+#[derive(Clone, Deserialize, GraphQLEnum, PartialEq)]
 pub enum ProductType {
     #[serde(rename = "Core Set")]
     CoreSet,
@@ -40,7 +80,7 @@ pub struct Set {
     pub r#type: SetType,
 }
 
-#[derive(Clone, Deserialize, GraphQLEnum)]
+#[derive(Clone, Deserialize, GraphQLEnum, PartialEq)]
 pub enum SetType {
     #[serde(rename = "Hero Signature")]
     HeroSignature,

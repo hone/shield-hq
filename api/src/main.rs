@@ -5,43 +5,10 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use juniper::{
-    graphql_object, http::GraphQLRequest, EmptyMutation, EmptySubscription, FieldResult, RootNode,
-};
+use data::graphql::{Ctx, Query, SHQScalarValue, Schema};
+use juniper::{http::GraphQLRequest, EmptyMutation, EmptySubscription, RootNode};
 use std::{net::SocketAddr, sync::Arc};
 use tracing::info;
-
-use data::{card::Card, graphql::SHQScalarValue, product::Product};
-
-const API_VERSION: &str = "0.1";
-
-#[derive(FromRef)]
-pub struct Ctx {
-    pub cards: Vec<Card>,
-    pub products: Vec<Product>,
-}
-
-impl juniper::Context for Ctx {}
-
-pub struct Query;
-
-#[graphql_object(Context = Ctx, Scalar = SHQScalarValue)]
-impl Query {
-    fn api_version() -> &str {
-        API_VERSION
-    }
-
-    fn all_products(context: &Ctx) -> FieldResult<&Vec<Product>> {
-        Ok(&context.products)
-    }
-
-    fn all_cards(context: &Ctx) -> FieldResult<&Vec<Card>> {
-        Ok(&context.cards)
-    }
-}
-
-pub type Schema =
-    RootNode<'static, Query, EmptyMutation<Ctx>, EmptySubscription<Ctx>, SHQScalarValue>;
 
 async fn graphiql() -> impl IntoResponse {
     Html(juniper::http::graphiql::graphiql_source("/graphql", None))

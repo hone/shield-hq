@@ -1,139 +1,68 @@
-use juniper::{
-    graphql_scalar,
-    parser::{ParseError, ScalarToken, Token},
-    GraphQLScalarValue, InputValue, ParseScalarResult, ScalarValue, Value,
+use crate::{
+    card::Card,
+    product::{Product, ProductType},
 };
-use serde::de;
-use std::fmt;
+use chrono::NaiveDate;
+use juniper::{graphql_object, Context, EmptyMutation, EmptySubscription, FieldResult, RootNode};
 
-#[derive(Clone, Debug, PartialEq, GraphQLScalarValue)]
-/// Custom GraphQL Scalar Value for handling unsigned ints
-pub enum SHQScalarValue {
-    Boolean(bool),
-    Float(f64),
-    Int(i32),
-    String(String),
-    UnsignedInt(u32),
+mod scalar;
+pub use scalar::SHQScalarValue;
+
+/// Macro to simplify writing graphql filters
+macro_rules! filter {
+    ( $filter:ident, $($item:expr => $input:ident,)+ ) => {
+        $(
+            if let Some($input) = &$input {
+                $filter = $item == $input && $filter;
+            }
+        )*
+    };
+}
+pub(crate) use filter;
+
+pub struct Ctx {
+    pub cards: Vec<Card>,
+    pub products: Vec<Product>,
 }
 
-impl ScalarValue for SHQScalarValue {
-    type Visitor = SHQScalarValueVisitor;
+impl Context for Ctx {}
 
-    fn as_int(&self) -> Option<i32> {
-        match *self {
-            Self::Int(ref i) => Some(*i),
-            _ => None,
-        }
+pub struct Query;
+
+#[graphql_object(Context = Ctx, Scalar = SHQScalarValue)]
+impl Query {
+    fn products(
+        context: &Ctx,
+        name: Option<String>,
+        release_date: Option<NaiveDate>,
+        r#type: Option<ProductType>,
+        code: Option<String>,
+        wave: Option<u32>,
+    ) -> FieldResult<Vec<&Product>> {
+        let products = &context.products;
+
+        Ok(products
+            .into_iter()
+            .filter(|product| {
+                let mut filter = true;
+
+                filter!(filter,
+                    &product.name => name,
+                    &product.release_date => release_date,
+                    &product.r#type => r#type,
+                    &product.code => code,
+                    &product.wave => wave,
+                );
+
+                filter
+            })
+            .collect())
     }
 
-    fn as_string(&self) -> Option<String> {
-        match *self {
-            Self::String(ref s) => Some(s.clone()),
-            _ => None,
-        }
-    }
-
-    fn into_string(self) -> Option<String> {
-        match self {
-            Self::String(s) => Some(s),
-            _ => None,
-        }
-    }
-
-    fn as_str(&self) -> Option<&str> {
-        match *self {
-            Self::String(ref s) => Some(s.as_str()),
-            _ => None,
-        }
-    }
-
-    fn as_float(&self) -> Option<f64> {
-        match *self {
-            Self::Int(ref i) => Some(f64::from(*i)),
-            Self::Float(ref f) => Some(*f),
-            _ => None,
-        }
-    }
-
-    fn as_boolean(&self) -> Option<bool> {
-        match *self {
-            Self::Boolean(ref b) => Some(*b),
-            _ => None,
-        }
-    }
-}
-
-#[derive(Debug, Default)]
-pub struct SHQScalarValueVisitor;
-
-impl<'de> serde::de::Visitor<'de> for SHQScalarValueVisitor {
-    type Value = SHQScalarValue;
-
-    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("a valid input value")
-    }
-
-    fn visit_bool<E: de::Error>(self, value: bool) -> Result<SHQScalarValue, E> {
-        Ok(SHQScalarValue::Boolean(value))
-    }
-
-    fn visit_i32<E: de::Error>(self, i: i32) -> Result<SHQScalarValue, E> {
-        Ok(SHQScalarValue::Int(i))
-    }
-
-    fn visit_i64<E: de::Error>(self, i: i64) -> Result<SHQScalarValue, E> {
-        if i <= i64::from(i32::MAX) {
-            self.visit_i32(i.try_into().unwrap())
-        } else {
-            self.visit_f64(i as f64)
-        }
-    }
-
-    fn visit_u32<E: de::Error>(self, u: u32) -> Result<SHQScalarValue, E> {
-        Ok(SHQScalarValue::UnsignedInt(u))
-    }
-
-    fn visit_u64<E: de::Error>(self, u: u64) -> Result<SHQScalarValue, E> {
-        if u <= u64::from(u32::MAX) {
-            self.visit_u32(u.try_into().unwrap())
-        } else {
-            self.visit_f64(u as f64)
-        }
-    }
-
-    fn visit_f64<E: de::Error>(self, f: f64) -> Result<SHQScalarValue, E> {
-        Ok(SHQScalarValue::Float(f))
-    }
-
-    fn visit_str<E: de::Error>(self, value: &str) -> Result<SHQScalarValue, E> {
-        self.visit_string(value.into())
-    }
-
-    fn visit_string<E: de::Error>(self, value: String) -> Result<SHQScalarValue, E> {
-        Ok(SHQScalarValue::String(value))
+    fn all_cards(context: &Ctx) -> FieldResult<&Vec<Card>> {
+        Ok(&context.cards)
     }
 }
 
-#[graphql_scalar(name = "UnsignedInt")]
-impl GraphQLScalar for u32 {
-    fn resolve(&self) -> Value {
-        Value::scalar(*self)
-    }
-
-    fn from_input_value(v: &InputValue) -> Option<u32> {
-        match *v {
-            InputValue::Scalar(SHQScalarValue::UnsignedInt(u)) => Some(u),
-            _ => None,
-        }
-    }
-
-    fn from_str<'a>(value: ScalarToken<'a>) -> ParseScalarResult<'a, SHQScalarValue> {
-        if let ScalarToken::Int(v) = value {
-            v.parse()
-                .map_err(|_| ParseError::UnexpectedToken(Token::Scalar(value)))
-                .map(|s: u32| s.into())
-        } else {
-            Err(ParseError::UnexpectedToken(Token::Scalar(value)))
-        }
-    }
-}
+pub type Schema =
+    RootNode<'static, Query, EmptyMutation<Ctx>, EmptySubscription<Ctx>, SHQScalarValue>;

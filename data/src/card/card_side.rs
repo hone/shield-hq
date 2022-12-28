@@ -32,7 +32,7 @@ pub enum CardSideVariant {
         traits: Vec<Trait>,
     },
     #[serde(rename = "Alter-Ego")]
-    AterEgo {
+    AlterEgo {
         side: Side,
         #[serde(default)]
         unique: bool,

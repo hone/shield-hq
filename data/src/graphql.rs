@@ -1,5 +1,5 @@
 use crate::{
-    card::Card,
+    card::{Card, CardInput},
     product::{Product, ProductType},
 };
 use chrono::NaiveDate;
@@ -10,10 +10,10 @@ pub use scalar::SHQScalarValue;
 
 /// Macro to simplify writing graphql filters
 macro_rules! filter {
-    ( $filter:ident, $($item:expr => $input:ident,)+ ) => {
+    ( $filter:ident, $($item:expr => $input:expr),+ ) => {
         $(
-            if let Some($input) = &$input {
-                $filter = $item == $input && $filter;
+            if let Some(input) = &$input {
+                $filter = $item == input && $filter;
             }
         )*
     };
@@ -51,7 +51,7 @@ impl Query {
                     &product.release_date => release_date,
                     &product.r#type => r#type,
                     &product.code => code,
-                    &product.wave => wave,
+                    &product.wave => wave
                 );
 
                 filter
@@ -59,8 +59,50 @@ impl Query {
             .collect())
     }
 
-    fn all_cards(context: &Ctx) -> FieldResult<&Vec<Card>> {
-        Ok(&context.cards)
+    fn cards(context: &Ctx, r#where: Option<CardInput>) -> FieldResult<Vec<&Card>> {
+        let cards = &context.cards;
+
+        if let Some(r#where) = r#where {
+            Ok(cards
+                .into_iter()
+                .filter(|card| {
+                    let mut filter = true;
+
+                    filter!(filter, &card.aspect => r#where.aspect);
+
+                    if let Some(products) = &r#where.products {
+                        filter = filter
+                            && !card
+                                .products
+                                .iter()
+                                .filter(|card_product| {
+                                    products
+                                        .iter()
+                                        .any(|input_product| card_product.included(input_product))
+                                })
+                                .collect::<Vec<_>>()
+                                .is_empty();
+                    }
+                    if let Some(sides) = &r#where.sides {
+                        filter = filter
+                            && !card
+                                .sides
+                                .iter()
+                                .filter(|card_side| {
+                                    sides
+                                        .iter()
+                                        .any(|input_side| card_side.included(input_side))
+                                })
+                                .collect::<Vec<_>>()
+                                .is_empty();
+                    }
+
+                    filter
+                })
+                .collect())
+        } else {
+            Ok(cards.into_iter().collect())
+        }
     }
 }
 

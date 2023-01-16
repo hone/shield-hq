@@ -52,7 +52,7 @@ impl Product {
 
                 filter!(filter,
                     &set.name => name,
-                    &set.r#type => r#type,
+                    &set.r#type => r#type
                 );
 
                 filter

@@ -34,6 +34,8 @@ pub struct CardSideInput {
     pub atk: Option<Option<BasicPower>>,
     #[builder(default)]
     pub thw: Option<Option<BasicPower>>,
+    #[builder(default)]
+    pub def: Option<Option<BasicPower>>,
 }
 
 #[derive(Clone, Deserialize)]
@@ -173,6 +175,9 @@ impl CardSide {
         if let Some(thw) = &input.thw {
             filter = filter && self.thw() == thw.as_ref();
         }
+        if let Some(def) = &input.def {
+            filter = filter && self.def() == def.as_ref();
+        }
 
         filter
     }
@@ -202,6 +207,13 @@ impl CardSide {
         match &self.variant {
             CardSideVariant::Hero { thw, .. } => Some(thw),
             CardSideVariant::Ally { thw, .. } => Some(thw),
+            _ => None,
+        }
+    }
+
+    fn def(&self) -> Option<&BasicPower> {
+        match &self.variant {
+            CardSideVariant::Hero { def, .. } => Some(def),
             _ => None,
         }
     }
@@ -235,6 +247,10 @@ impl CardSide {
 
     fn atk(&self) -> Option<&BasicPower> {
         self.atk()
+    }
+
+    fn def(&self) -> Option<&BasicPower> {
+        self.def()
     }
 }
 

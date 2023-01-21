@@ -41,6 +41,8 @@ pub struct CardSideInput {
     pub hand_size: Option<Option<u32>>,
     #[builder(default)]
     pub hit_points: Option<Option<HitPoints>>,
+    #[builder(default)]
+    pub traits: Option<Option<Vec<Trait>>>,
 }
 
 #[derive(Clone, Deserialize)]
@@ -168,7 +170,7 @@ impl CardSide {
                 let b: HashSet<_> = self.illustrators.as_ref().unwrap().iter().collect();
 
                 filter = filter && a.intersection(&b).next().is_some();
-            } else if input_illustrators != &self.illustrators {
+            } else if input_illustrators.as_ref() != self.illustrators.as_ref() {
                 filter = false;
             }
         }
@@ -181,6 +183,17 @@ impl CardSide {
             self.hand_size() => input.hand_size,
             self.hit_points() => input.hit_points
         );
+
+        if let Some(input_traits) = &input.traits {
+            if input_traits.is_some() && self.traits().is_some() {
+                let a: HashSet<_> = input_traits.as_ref().unwrap().iter().collect();
+                let b: HashSet<_> = self.traits().unwrap().iter().collect();
+
+                filter = filter && a.intersection(&b).next().is_some();
+            } else if input_traits.as_ref() != self.traits() {
+                filter = false;
+            }
+        }
 
         filter
     }
@@ -238,6 +251,21 @@ impl CardSide {
             _ => None,
         }
     }
+
+    fn traits(&self) -> Option<&Vec<Trait>> {
+        match &self.variant {
+            CardSideVariant::Hero { traits, .. } => Some(traits),
+            CardSideVariant::AlterEgo { traits, .. } => Some(traits),
+            CardSideVariant::Ally { traits, .. } => Some(traits),
+            CardSideVariant::Event { traits, .. } => Some(traits),
+            CardSideVariant::Support { traits, .. } => Some(traits),
+            CardSideVariant::Upgrade { traits, .. } => Some(traits),
+            CardSideVariant::Attachment { traits, .. } => Some(traits),
+            CardSideVariant::Minion { traits, .. } => Some(traits),
+            CardSideVariant::SideScheme { traits, .. } => Some(traits),
+            _ => None,
+        }
+    }
 }
 
 #[graphql_object(Scalar = SHQScalarValue)]
@@ -246,16 +274,16 @@ impl CardSide {
         &self.name
     }
 
-    fn text(&self) -> &Option<String> {
-        &self.text
+    fn text(&self) -> Option<&String> {
+        self.text.as_ref()
     }
 
-    fn flavor_text(&self) -> &Option<String> {
-        &self.flavor_text
+    fn flavor_text(&self) -> Option<&String> {
+        self.flavor_text.as_ref()
     }
 
-    fn illustrators(&self) -> &Option<Vec<String>> {
-        &self.illustrators
+    fn illustrators(&self) -> Option<&Vec<String>> {
+        self.illustrators.as_ref()
     }
 
     fn unique(&self) -> Option<&bool> {
@@ -280,6 +308,10 @@ impl CardSide {
 
     fn hit_points(&self) -> Option<&HitPoints> {
         self.hit_points()
+    }
+
+    fn traits(&self) -> Option<&Vec<Trait>> {
+        self.traits()
     }
 }
 

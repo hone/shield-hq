@@ -1,7 +1,7 @@
 use juniper::GraphQLEnum;
 use serde::Deserialize;
 
-#[derive(Clone, Deserialize, GraphQLEnum)]
+#[derive(Clone, Deserialize, GraphQLEnum, Hash, PartialEq, Eq)]
 pub enum Trait {
     Aerial,
     Armor,

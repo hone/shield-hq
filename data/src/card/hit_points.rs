@@ -1,10 +1,12 @@
+use juniper::{graphql_scalar, ParseScalarResult, ParseScalarValue, Value};
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{
     de::{self, Deserializer, Unexpected, Visitor},
     Deserialize,
 };
-use std::fmt;
+use std::{fmt, str::FromStr};
+use thiserror::Error;
 
 struct HitPointsVisitor;
 
@@ -26,6 +28,39 @@ impl<'de> Visitor<'de> for HitPointsVisitor {
     where
         E: de::Error,
     {
+        <HitPoints as FromStr>::from_str(value).map_err(|_| {
+            de::Error::invalid_value(
+                Unexpected::Str(value),
+                &"takes an Integer or Integer:player:",
+            )
+        })
+    }
+}
+
+#[derive(Debug, Error, PartialEq)]
+#[error("{0} is not a Number or per player")]
+pub struct ParseHitPointsError(String);
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum HitPoints {
+    Number(u8),
+    PerPlayer(u8),
+}
+
+impl fmt::Display for HitPoints {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let str = match self {
+            HitPoints::Number(n) => n.to_string(),
+            HitPoints::PerPlayer(n) => format!("{n} per Player"),
+        };
+        write!(f, "{str}")
+    }
+}
+
+impl FromStr for HitPoints {
+    type Err = ParseHitPointsError;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
         lazy_static! {
             static ref HIT_POINTS_RE: Regex = Regex::new(r"([\d]+):player:").unwrap();
         }
@@ -33,30 +68,14 @@ impl<'de> Visitor<'de> for HitPointsVisitor {
         if let Ok(num) = value.parse::<u8>() {
             Ok(HitPoints::Number(num))
         } else if let Some(caps) = HIT_POINTS_RE.captures(&value) {
-            let cap_value = caps.get(1).ok_or_else(|| {
-                de::Error::invalid_value(
-                    Unexpected::Str(value),
-                    &"takes an Integer or Integer:player:",
-                )
-            })?;
-            let number = cap_value.as_str().parse::<u8>().map_err(|_| {
-                de::Error::invalid_value(Unexpected::Str(value), &"X, where X is a number.")
-            })?;
-
+            // b/c of the regex, this should always unwrap()
+            let cap_value = caps.get(1).unwrap();
+            let number = cap_value.as_str().parse::<u8>().unwrap();
             Ok(HitPoints::PerPlayer(number))
         } else {
-            Err(de::Error::invalid_value(
-                Unexpected::Str(value),
-                &"takes an Integer or Integer:player:",
-            ))
+            Err(ParseHitPointsError(String::from(value)))
         }
     }
-}
-
-#[derive(Clone, Debug, PartialEq)]
-pub enum HitPoints {
-    Number(u8),
-    PerPlayer(u8),
 }
 
 impl<'de> Deserialize<'de> for HitPoints {
@@ -65,6 +84,28 @@ impl<'de> Deserialize<'de> for HitPoints {
         D: Deserializer<'de>,
     {
         deserializer.deserialize_any(HitPointsVisitor)
+    }
+}
+
+#[graphql_scalar]
+impl<S> GraphQLScalar for HitPoints
+where
+    S: ScalarValue,
+{
+    fn resolve(&self) -> Value {
+        Value::scalar(self.to_string())
+    }
+
+    fn from_input_value(value: InputValue) -> Option<HitPoints> {
+        if let Some(s) = value.as_string_value() {
+            <HitPoints as FromStr>::from_str(&s).ok()
+        } else {
+            None
+        }
+    }
+
+    fn from_str<'a>(value: ScalarToken<'a>) -> ParseScalarResult<'a, S> {
+        <String as ParseScalarValue<S>>::from_str(value)
     }
 }
 

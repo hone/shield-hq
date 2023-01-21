@@ -1,6 +1,6 @@
 use crate::{
     card::{BasicPower, Cost, HitPoints, Keyword, Resource, SideSchemeIcon, Trait},
-    graphql::filter,
+    graphql::{filter, SHQScalarValue},
 };
 use derive_builder::Builder;
 use juniper::{graphql_object, GraphQLEnum, GraphQLInputObject};
@@ -18,6 +18,7 @@ pub struct CardSide {
 }
 
 #[derive(Builder, Clone, GraphQLInputObject)]
+#[graphql(scalar = SHQScalarValue)]
 pub struct CardSideInput {
     #[builder(default)]
     pub name: Option<String>,
@@ -36,6 +37,10 @@ pub struct CardSideInput {
     pub thw: Option<Option<BasicPower>>,
     #[builder(default)]
     pub def: Option<Option<BasicPower>>,
+    #[builder(default)]
+    pub hand_size: Option<Option<u32>>,
+    #[builder(default)]
+    pub hit_points: Option<Option<HitPoints>>,
 }
 
 #[derive(Clone, Deserialize)]
@@ -178,6 +183,12 @@ impl CardSide {
         if let Some(def) = &input.def {
             filter = filter && self.def() == def.as_ref();
         }
+        if let Some(hand_size) = &input.hand_size {
+            filter = filter && self.hand_size() == hand_size.as_ref();
+        }
+        if let Some(hit_points) = &input.hit_points {
+            filter = filter && self.hit_points() == hit_points.as_ref();
+        }
 
         filter
     }
@@ -217,9 +228,27 @@ impl CardSide {
             _ => None,
         }
     }
+
+    fn hand_size(&self) -> Option<&u32> {
+        match &self.variant {
+            CardSideVariant::Hero { hand_size, .. } => Some(hand_size),
+            CardSideVariant::AlterEgo { hand_size, .. } => Some(hand_size),
+            _ => None,
+        }
+    }
+
+    fn hit_points(&self) -> Option<&HitPoints> {
+        match &self.variant {
+            CardSideVariant::Hero { hit_points, .. } => Some(hit_points),
+            CardSideVariant::AlterEgo { hit_points, .. } => Some(hit_points),
+            CardSideVariant::Ally { hit_points, .. } => Some(hit_points),
+            CardSideVariant::Minion { hit_points, .. } => Some(hit_points),
+            _ => None,
+        }
+    }
 }
 
-#[graphql_object]
+#[graphql_object(Scalar = SHQScalarValue)]
 impl CardSide {
     fn name(&self) -> &String {
         &self.name
@@ -251,6 +280,14 @@ impl CardSide {
 
     fn def(&self) -> Option<&BasicPower> {
         self.def()
+    }
+
+    fn hand_size(&self) -> Option<&u32> {
+        self.hand_size()
+    }
+
+    fn hit_points(&self) -> Option<&HitPoints> {
+        self.hit_points()
     }
 }
 

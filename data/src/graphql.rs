@@ -13,12 +13,24 @@ macro_rules! filter {
     ( $filter:ident, $($item:expr => $input:expr),+ ) => {
         $(
             if let Some(input) = &$input {
-                $filter = $item == input && $filter;
+                $filter = $filter && $item == input;
             }
         )*
     };
 }
 pub(crate) use filter;
+
+/// Macro to simplify writing graphql filters
+macro_rules! filter_option {
+    ( $filter:ident, $($item:expr => $input:expr),+ ) => {
+        $(
+            if let Some(input) = &$input {
+                $filter = $filter && $item == input.as_ref();
+            }
+        )*
+    };
+}
+pub(crate) use filter_option;
 
 pub struct Ctx {
     pub cards: Vec<Card>,

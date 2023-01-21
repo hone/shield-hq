@@ -1,6 +1,6 @@
 use crate::{
     card::{BasicPower, Cost, HitPoints, Keyword, Resource, SideSchemeIcon, Trait},
-    graphql::{filter, SHQScalarValue},
+    graphql::{filter, filter_option, SHQScalarValue},
 };
 use derive_builder::Builder;
 use juniper::{graphql_object, GraphQLEnum, GraphQLInputObject};
@@ -157,9 +157,11 @@ impl CardSide {
     pub fn included(&self, input: &CardSideInput) -> bool {
         let mut filter = true;
 
-        filter!(filter, &self.name => input.name);
-        filter!(filter, &self.text => input.text);
-        filter!(filter, &self.flavor_text => input.flavor_text);
+        filter!(filter,
+            &self.name => input.name,
+            &self.text => input.text,
+            &self.flavor_text => input.flavor_text
+        );
         if let Some(input_illustrators) = &input.illustrators {
             if input_illustrators.is_some() && self.illustrators.is_some() {
                 let a: HashSet<_> = input_illustrators.as_ref().unwrap().iter().collect();
@@ -171,24 +173,14 @@ impl CardSide {
             }
         }
 
-        if let Some(unique) = &input.unique {
-            filter = filter && self.unique() == unique.as_ref();
-        }
-        if let Some(atk) = &input.atk {
-            filter = filter && self.atk() == atk.as_ref();
-        }
-        if let Some(thw) = &input.thw {
-            filter = filter && self.thw() == thw.as_ref();
-        }
-        if let Some(def) = &input.def {
-            filter = filter && self.def() == def.as_ref();
-        }
-        if let Some(hand_size) = &input.hand_size {
-            filter = filter && self.hand_size() == hand_size.as_ref();
-        }
-        if let Some(hit_points) = &input.hit_points {
-            filter = filter && self.hit_points() == hit_points.as_ref();
-        }
+        filter_option!(filter,
+            self.unique() => input.unique,
+            self.atk() => input.atk,
+            self.thw() => input.thw,
+            self.def() => input.def,
+            self.hand_size() => input.hand_size,
+            self.hit_points() => input.hit_points
+        );
 
         filter
     }

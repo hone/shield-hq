@@ -1,6 +1,6 @@
 use crate::{
     card::{BasicPower, Cost, HitPoints, Keyword, Resource, SideSchemeIcon, Trait},
-    graphql::{filter, filter_option, SHQScalarValue},
+    graphql::{filter, filter_option, filter_vec, SHQScalarValue},
 };
 use derive_builder::Builder;
 use juniper::{graphql_object, GraphQLEnum, GraphQLInputObject};
@@ -164,17 +164,10 @@ impl CardSide {
             &self.text => input.text,
             &self.flavor_text => input.flavor_text
         );
-        if let Some(input_illustrators) = &input.illustrators {
-            if input_illustrators.is_some() && self.illustrators.is_some() {
-                let a: HashSet<_> = input_illustrators.as_ref().unwrap().iter().collect();
-                let b: HashSet<_> = self.illustrators.as_ref().unwrap().iter().collect();
-
-                filter = filter && a.intersection(&b).next().is_some();
-            } else if input_illustrators.as_ref() != self.illustrators.as_ref() {
-                filter = false;
-            }
-        }
-
+        filter_vec!(filter,
+            self.illustrators.as_ref() => &input.illustrators,
+            self.traits() => &input.traits
+        );
         filter_option!(filter,
             self.unique() => input.unique,
             self.atk() => input.atk,
@@ -183,17 +176,6 @@ impl CardSide {
             self.hand_size() => input.hand_size,
             self.hit_points() => input.hit_points
         );
-
-        if let Some(input_traits) = &input.traits {
-            if input_traits.is_some() && self.traits().is_some() {
-                let a: HashSet<_> = input_traits.as_ref().unwrap().iter().collect();
-                let b: HashSet<_> = self.traits().unwrap().iter().collect();
-
-                filter = filter && a.intersection(&b).next().is_some();
-            } else if input_traits.as_ref() != self.traits() {
-                filter = false;
-            }
-        }
 
         filter
     }

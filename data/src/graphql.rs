@@ -32,6 +32,24 @@ macro_rules! filter_option {
 }
 pub(crate) use filter_option;
 
+macro_rules! filter_vec {
+    ( $filter:ident, $($item:expr => $input:expr), + ) => {
+        $(
+            if let Some(input) = $input {
+                if input.is_some() && $item.is_some() {
+                    let a: HashSet<_> = input.as_ref().unwrap().iter().collect();
+                    let b: HashSet<_> = $item.unwrap().iter().collect();
+
+                    $filter = $filter && a.intersection(&b).next().is_some();
+                } else if input.as_ref() != $item {
+                    $filter = false;
+                }
+            }
+        )*
+    };
+}
+pub(crate) use filter_vec;
+
 pub struct Ctx {
     pub cards: Vec<Card>,
     pub products: Vec<Product>,

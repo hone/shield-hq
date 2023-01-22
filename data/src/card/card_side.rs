@@ -30,13 +30,21 @@ pub struct CardSideInput {
     pub illustrators: Option<Option<Vec<String>>>,
     // Card Side Variant
     #[builder(default)]
-    pub unique: Option<Option<bool>>,
+    pub side: Option<Option<Side>>,
     #[builder(default)]
-    pub atk: Option<Option<BasicPower>>,
+    pub unique: Option<Option<bool>>,
     #[builder(default)]
     pub thw: Option<Option<BasicPower>>,
     #[builder(default)]
+    pub thw_consequential: Option<Option<u32>>,
+    #[builder(default)]
+    pub atk: Option<Option<BasicPower>>,
+    #[builder(default)]
+    pub atk_consequential: Option<Option<u32>>,
+    #[builder(default)]
     pub def: Option<Option<BasicPower>>,
+    #[builder(default)]
+    pub rec: Option<Option<BasicPower>>,
     #[builder(default)]
     pub hand_size: Option<Option<u32>>,
     #[builder(default)]
@@ -169,15 +177,27 @@ impl CardSide {
             self.traits() => &input.traits
         );
         filter_option!(filter,
+            self.side() => input.side,
             self.unique() => input.unique,
-            self.atk() => input.atk,
             self.thw() => input.thw,
+            self.thw_consequential() => input.thw_consequential,
+            self.atk() => input.atk,
+            self.atk_consequential() => input.atk_consequential,
             self.def() => input.def,
+            self.rec() => input.rec,
             self.hand_size() => input.hand_size,
             self.hit_points() => input.hit_points
         );
 
         filter
+    }
+
+    fn side(&self) -> Option<&Side> {
+        match &self.variant {
+            CardSideVariant::Hero { side, .. } => Some(side),
+            CardSideVariant::AlterEgo { side, .. } => Some(side),
+            _ => None,
+        }
     }
 
     fn unique(&self) -> Option<&bool> {
@@ -192,6 +212,23 @@ impl CardSide {
         }
     }
 
+    fn thw(&self) -> Option<&BasicPower> {
+        match &self.variant {
+            CardSideVariant::Hero { thw, .. } => Some(thw),
+            CardSideVariant::Ally { thw, .. } => Some(thw),
+            _ => None,
+        }
+    }
+
+    fn thw_consequential(&self) -> Option<&u32> {
+        match &self.variant {
+            CardSideVariant::Ally {
+                thw_consequential, ..
+            } => Some(thw_consequential),
+            _ => None,
+        }
+    }
+
     fn atk(&self) -> Option<&BasicPower> {
         match &self.variant {
             CardSideVariant::Hero { atk, .. } => Some(atk),
@@ -201,10 +238,11 @@ impl CardSide {
         }
     }
 
-    fn thw(&self) -> Option<&BasicPower> {
+    fn atk_consequential(&self) -> Option<&u32> {
         match &self.variant {
-            CardSideVariant::Hero { thw, .. } => Some(thw),
-            CardSideVariant::Ally { thw, .. } => Some(thw),
+            CardSideVariant::Ally {
+                atk_consequential, ..
+            } => Some(atk_consequential),
             _ => None,
         }
     }
@@ -212,6 +250,13 @@ impl CardSide {
     fn def(&self) -> Option<&BasicPower> {
         match &self.variant {
             CardSideVariant::Hero { def, .. } => Some(def),
+            _ => None,
+        }
+    }
+
+    fn rec(&self) -> Option<&BasicPower> {
+        match &self.variant {
+            CardSideVariant::AlterEgo { rec, .. } => Some(rec),
             _ => None,
         }
     }
@@ -276,12 +321,24 @@ impl CardSide {
         self.thw()
     }
 
+    fn thw_consequential(&self) -> Option<&u32> {
+        self.thw_consequential()
+    }
+
     fn atk(&self) -> Option<&BasicPower> {
         self.atk()
     }
 
+    fn atk_consequential(&self) -> Option<&u32> {
+        self.atk_consequential()
+    }
+
     fn def(&self) -> Option<&BasicPower> {
         self.def()
+    }
+
+    fn rec(&self) -> Option<&BasicPower> {
+        self.rec()
     }
 
     fn hand_size(&self) -> Option<&u32> {
@@ -297,7 +354,7 @@ impl CardSide {
     }
 }
 
-#[derive(Clone, Deserialize, GraphQLEnum)]
+#[derive(Clone, Deserialize, GraphQLEnum, PartialEq)]
 pub enum Side {
     A,
     B,

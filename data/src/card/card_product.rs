@@ -1,5 +1,9 @@
-use crate::card::{CardSet, CardSetInput};
-use crate::graphql::{filter, SHQScalarValue};
+use crate::graphql::{filter, Ctx, SHQScalarValue};
+use crate::{
+    card::{CardSet, CardSetInput},
+    product::{ProductType, Set as ProductSet},
+};
+use chrono::NaiveDate;
 use derive_builder::Builder;
 use juniper::{graphql_object, GraphQLInputObject};
 use serde::Deserialize;
@@ -25,7 +29,7 @@ pub struct CardProduct {
     pub sets: Option<Vec<CardSet>>,
 }
 
-#[graphql_object(scalar = SHQScalarValue)]
+#[graphql_object(Context = Ctx, scalar = SHQScalarValue)]
 impl CardProduct {
     fn code(&self) -> &str {
         &self.code
@@ -51,6 +55,28 @@ impl CardProduct {
         } else {
             None
         }
+    }
+
+    fn name(&self, context: &Ctx) -> Option<&String> {
+        context.product(&self.code).map(|product| &product.name)
+    }
+
+    fn release_date(&self, context: &Ctx) -> Option<&NaiveDate> {
+        context
+            .product(&self.code)
+            .map(|product| &product.release_date)
+    }
+
+    fn r#type(&self, context: &Ctx) -> Option<&ProductType> {
+        context.product(&self.code).map(|product| &product.r#type)
+    }
+
+    fn wave(&self, context: &Ctx) -> Option<&u32> {
+        context.product(&self.code).map(|product| &product.wave)
+    }
+
+    fn product_sets(&self, context: &Ctx) -> Option<&Vec<ProductSet>> {
+        context.product(&self.code).map(|product| &product.sets)
     }
 }
 

@@ -50,10 +50,7 @@ async fn main() {
         toml::from_str(include_str!("../../data/data/core-set.toml")).unwrap();
     let products_doc: data::product::Document =
         toml::from_str(include_str!("../../data/data/products.toml")).unwrap();
-    let ctx = Arc::new(Ctx {
-        cards: cards_doc.cards,
-        products: products_doc.products,
-    });
+    let ctx = Arc::new(Ctx::new(cards_doc.cards, products_doc.products));
     let state = AppState { schema, ctx };
 
     let app = Router::new()

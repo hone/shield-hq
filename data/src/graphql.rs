@@ -4,6 +4,7 @@ use crate::{
 };
 use chrono::NaiveDate;
 use juniper::{graphql_object, Context, EmptyMutation, EmptySubscription, FieldResult, RootNode};
+use std::collections::HashMap;
 
 mod scalar;
 pub use scalar::SHQScalarValue;
@@ -53,9 +54,32 @@ pub(crate) use filter_vec;
 pub struct Ctx {
     pub cards: Vec<Card>,
     pub products: Vec<Product>,
+    // https://github.com/graphql-rust/juniper/issues/143
+    // Just going to clone products again in memory, since I don't want to deal with lifetime
+    // parameters in the Context object in juniper
+    products_index: HashMap<String, Product>,
 }
 
 impl Context for Ctx {}
+
+impl Ctx {
+    pub fn new(cards: Vec<Card>, products: Vec<Product>) -> Self {
+        let products_index: HashMap<_, _> = products
+            .iter()
+            .map(|product| (product.code.clone(), product.clone()))
+            .collect();
+
+        Self {
+            cards,
+            products,
+            products_index,
+        }
+    }
+
+    pub fn product(&self, code: impl AsRef<str>) -> Option<&Product> {
+        self.products_index.get(code.as_ref())
+    }
+}
 
 pub struct Query;
 

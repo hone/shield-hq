@@ -1,4 +1,4 @@
-use crate::graphql::SHQScalarValue;
+use crate::graphql::{Ctx, SHQScalarValue};
 use card_side::{CardSide, CardSideInput};
 use juniper::{GraphQLEnum, GraphQLInputObject, GraphQLObject};
 use serde::Deserialize;
@@ -30,7 +30,7 @@ pub struct Document {
 }
 
 #[derive(Clone, Deserialize, GraphQLObject)]
-#[graphql(scalar = SHQScalarValue)]
+#[graphql(Context = Ctx, scalar = SHQScalarValue)]
 #[serde(deny_unknown_fields)]
 pub struct Card {
     #[serde(rename = "product")]

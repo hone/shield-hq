@@ -51,6 +51,20 @@ macro_rules! filter_vec {
 }
 pub(crate) use filter_vec;
 
+macro_rules! filter_context {
+    ( $filter:ident, $($item:expr => $input:expr),+ ) => {
+        $(
+            if let Some(input) = &$input {
+                if let Some(ctx) = $item {
+                    $filter = $filter && ctx == input;
+                }
+            }
+        )*
+    };
+}
+pub(crate) use filter_context;
+
+#[derive(Default)]
 pub struct Ctx {
     pub cards: Vec<Card>,
     pub products: Vec<Product>,
@@ -130,9 +144,9 @@ impl Query {
                                 .products
                                 .iter()
                                 .filter(|card_product| {
-                                    products
-                                        .iter()
-                                        .any(|input_product| card_product.included(input_product))
+                                    products.iter().any(|input_product| {
+                                        card_product.included(input_product, context)
+                                    })
                                 })
                                 .collect::<Vec<_>>()
                                 .is_empty();

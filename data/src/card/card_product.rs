@@ -1,4 +1,4 @@
-use crate::graphql::{filter, Ctx, SHQScalarValue};
+use crate::graphql::{filter, filter_context, Ctx, SHQScalarValue};
 use crate::{
     card::{CardSet, CardSetInput},
     product::{ProductType, Set as ProductSet},
@@ -18,6 +18,15 @@ pub struct CardProductInput {
     pub positions: Option<Vec<u32>>,
     #[builder(default)]
     pub sets: Option<Option<Vec<CardSetInput>>>,
+    // Product Fields
+    #[builder(default)]
+    pub name: Option<String>,
+    #[builder(default)]
+    pub release_date: Option<NaiveDate>,
+    #[builder(default)]
+    pub r#type: Option<ProductType>,
+    #[builder(default)]
+    pub wave: Option<u32>,
 }
 
 #[derive(Clone, Deserialize)]
@@ -58,21 +67,19 @@ impl CardProduct {
     }
 
     fn name(&self, context: &Ctx) -> Option<&String> {
-        context.product(&self.code).map(|product| &product.name)
+        self.name(context)
     }
 
     fn release_date(&self, context: &Ctx) -> Option<&NaiveDate> {
-        context
-            .product(&self.code)
-            .map(|product| &product.release_date)
+        self.release_date(context)
     }
 
     fn r#type(&self, context: &Ctx) -> Option<&ProductType> {
-        context.product(&self.code).map(|product| &product.r#type)
+        self.r#type(context)
     }
 
     fn wave(&self, context: &Ctx) -> Option<&u32> {
-        context.product(&self.code).map(|product| &product.wave)
+        self.wave(context)
     }
 
     fn product_sets(&self, context: &Ctx) -> Option<&Vec<ProductSet>> {
@@ -81,7 +88,25 @@ impl CardProduct {
 }
 
 impl CardProduct {
-    pub fn included(&self, input: &CardProductInput) -> bool {
+    pub fn name<'a>(&self, context: &'a Ctx) -> Option<&'a String> {
+        context.product(&self.code).map(|product| &product.name)
+    }
+
+    pub fn release_date<'a>(&self, context: &'a Ctx) -> Option<&'a NaiveDate> {
+        context
+            .product(&self.code)
+            .map(|product| &product.release_date)
+    }
+
+    pub fn r#type<'a>(&self, context: &'a Ctx) -> Option<&'a ProductType> {
+        context.product(&self.code).map(|product| &product.r#type)
+    }
+
+    pub fn wave<'a>(&self, context: &'a Ctx) -> Option<&'a u32> {
+        context.product(&self.code).map(|product| &product.wave)
+    }
+
+    pub fn included(&self, input: &CardProductInput, context: &Ctx) -> bool {
         let mut filter = true;
 
         filter!(filter, &self.code => input.code);
@@ -105,6 +130,12 @@ impl CardProduct {
                 }
             }
         }
+        filter_context!(filter,
+            self.name(context) => input.name,
+            self.release_date(context) => input.release_date,
+            self.r#type(context) => input.r#type,
+            self.wave(context) => input.wave
+        );
 
         filter
     }
@@ -128,11 +159,12 @@ mod tests {
         };
         let input_none = CardProductInputBuilder::default().build().unwrap();
 
-        assert_eq!(true, card_product.included(&input_none));
+        assert_eq!(true, card_product.included(&input_none, &Ctx::default()));
     }
 
     #[test]
     fn included_code() {
+        let ctx = Ctx::default();
         let card_set = CardSet {
             name: String::from("Something Sinister"),
             positions: Some(vec![1, 2]),
@@ -151,12 +183,13 @@ mod tests {
             .build()
             .unwrap();
 
-        assert_eq!(true, card_product.included(&code_input_included));
-        assert_eq!(false, card_product.included(&code_input_not_included));
+        assert_eq!(true, card_product.included(&code_input_included, &ctx));
+        assert_eq!(false, card_product.included(&code_input_not_included, &ctx));
     }
 
     #[test]
     fn included_positions() {
+        let ctx = Ctx::default();
         let card_set = CardSet {
             name: String::from("Something Sinister"),
             positions: Some(vec![1, 2]),
@@ -179,16 +212,20 @@ mod tests {
             .build()
             .unwrap();
 
-        assert_eq!(true, card_product.included(&positions_input_included));
-        assert_eq!(false, card_product.included(&positions_input_not_included));
+        assert_eq!(true, card_product.included(&positions_input_included, &ctx));
+        assert_eq!(
+            false,
+            card_product.included(&positions_input_not_included, &ctx)
+        );
         assert_eq!(
             true,
-            card_product.included(&positions_input_partial_include)
+            card_product.included(&positions_input_partial_include, &ctx)
         );
     }
 
     #[test]
     fn input_included_sets_name() {
+        let ctx = Ctx::default();
         let sinister_set = CardSet {
             name: String::from("Something Sinister"),
             positions: Some(vec![1, 2]),
@@ -223,8 +260,8 @@ mod tests {
             .build()
             .unwrap();
 
-        assert_eq!(true, card_product.included(&input));
-        assert_eq!(true, card_product.included(&input_or));
+        assert_eq!(true, card_product.included(&input, &ctx));
+        assert_eq!(true, card_product.included(&input_or, &ctx));
     }
 
     #[test]
@@ -250,6 +287,6 @@ mod tests {
             .build()
             .unwrap();
 
-        assert_eq!(false, card_product.included(&input));
+        assert_eq!(false, card_product.included(&input, &Ctx::default()));
     }
 }

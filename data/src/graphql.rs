@@ -1,6 +1,6 @@
 use crate::{
     card::{Card, CardInput},
-    product::{Product, ProductType},
+    product::{Product, ProductType, SetInput as ProductSetInput},
 };
 use chrono::NaiveDate;
 use juniper::{graphql_object, Context, EmptyMutation, EmptySubscription, FieldResult, RootNode};
@@ -106,6 +106,7 @@ impl Query {
         r#type: Option<ProductType>,
         code: Option<String>,
         wave: Option<u32>,
+        sets: Option<Vec<ProductSetInput>>,
     ) -> FieldResult<Vec<&Product>> {
         let products = &context.products;
 
@@ -121,6 +122,19 @@ impl Query {
                     &product.code => code,
                     &product.wave => wave
                 );
+                if let Some(input_sets) = &sets {
+                    filter = filter
+                        && !input_sets
+                            .iter()
+                            .filter(|input_set| {
+                                product
+                                    .sets
+                                    .iter()
+                                    .any(|product_set| product_set.included(input_set))
+                            })
+                            .collect::<Vec<_>>()
+                            .is_empty();
+                }
 
                 filter
             })

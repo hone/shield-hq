@@ -1,6 +1,7 @@
 use crate::graphql::{filter, SHQScalarValue};
 use chrono::NaiveDate;
-use juniper::{graphql_object, GraphQLEnum, GraphQLObject};
+use derive_builder::Builder;
+use juniper::{graphql_object, GraphQLEnum, GraphQLInputObject, GraphQLObject};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -74,10 +75,30 @@ pub enum ProductType {
     Custom,
 }
 
+#[derive(Builder, Clone, GraphQLInputObject)]
+pub struct SetInput {
+    #[builder(default)]
+    pub name: Option<String>,
+    #[builder(default)]
+    pub r#type: Option<SetType>,
+}
+
 #[derive(Clone, Deserialize, GraphQLObject)]
 pub struct Set {
     pub name: String,
     pub r#type: SetType,
+}
+
+impl Set {
+    pub fn included(&self, input: &SetInput) -> bool {
+        let mut filter = true;
+        filter!(filter,
+            &self.name => input.name,
+            &self.r#type => input.r#type
+        );
+
+        filter
+    }
 }
 
 #[derive(Clone, Deserialize, GraphQLEnum, PartialEq)]

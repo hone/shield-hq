@@ -1,7 +1,7 @@
 use crate::graphql::{filter, filter_context, Ctx, SHQScalarValue};
 use crate::{
     card::{CardSet, CardSetInput},
-    product::{ProductType, Set as ProductSet},
+    product::ProductType,
 };
 use chrono::NaiveDate;
 use derive_builder::Builder;
@@ -81,10 +81,6 @@ impl CardProduct {
     fn wave(&self, context: &Ctx) -> Option<&u32> {
         self.wave(context)
     }
-
-    fn product_sets(&self, context: &Ctx) -> Option<&Vec<ProductSet>> {
-        context.product(&self.code).map(|product| &product.sets)
-    }
 }
 
 impl CardProduct {
@@ -122,7 +118,9 @@ impl CardProduct {
                     filter = filter
                         && !input_sets
                             .iter()
-                            .filter(|input_set| self_sets.iter().any(|set| set.included(input_set)))
+                            .filter(|input_set| {
+                                self_sets.iter().any(|set| set.included(input_set, context))
+                            })
                             .collect::<Vec<_>>()
                             .is_empty();
                 } else {

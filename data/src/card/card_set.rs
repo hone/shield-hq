@@ -1,6 +1,9 @@
-use crate::graphql::{filter, SHQScalarValue};
+use crate::{
+    graphql::{filter, filter_context, Ctx, SHQScalarValue},
+    product::SetType as ProductSetType,
+};
 use derive_builder::Builder;
-use juniper::{GraphQLInputObject, GraphQLObject};
+use juniper::{graphql_object, GraphQLInputObject};
 use serde::Deserialize;
 use std::collections::HashSet;
 
@@ -11,18 +14,38 @@ pub struct CardSetInput {
     pub name: Option<String>,
     #[builder(default)]
     pub positions: Option<Option<Vec<u32>>>,
+    #[builder(default)]
+    pub r#type: Option<ProductSetType>,
 }
 
-#[derive(Clone, Deserialize, GraphQLObject)]
-#[graphql(scalar = SHQScalarValue)]
+#[derive(Clone, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct CardSet {
     pub name: String,
     pub positions: Option<Vec<u32>>,
 }
 
+#[graphql_object(Context = Ctx, scalar = SHQScalarValue)]
 impl CardSet {
-    pub fn included(&self, input: &CardSetInput) -> bool {
+    fn name(&self) -> &str {
+        &self.name
+    }
+
+    fn positions(&self) -> Option<&Vec<u32>> {
+        self.positions.as_ref()
+    }
+
+    fn r#type(&self, context: &Ctx) -> Option<&ProductSetType> {
+        self.r#type(context)
+    }
+}
+
+impl CardSet {
+    pub fn r#type<'a>(&self, context: &'a Ctx) -> Option<&'a ProductSetType> {
+        context.set(&self.name).as_ref().map(|set| &set.r#type)
+    }
+
+    pub fn included(&self, input: &CardSetInput, context: &Ctx) -> bool {
         let mut filter = true;
 
         filter!(filter, &self.name => input.name);
@@ -39,6 +62,7 @@ impl CardSet {
                 filter = false;
             }
         }
+        filter_context!(filter, self.r#type(context) => input.r#type);
 
         filter
     }

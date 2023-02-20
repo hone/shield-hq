@@ -1,6 +1,6 @@
 use crate::{
     card::{Card, CardInput},
-    product::{Product, ProductType, SetInput as ProductSetInput},
+    product::{Product, ProductType, Set as ProductSet, SetInput as ProductSetInput},
 };
 use chrono::NaiveDate;
 use juniper::{graphql_object, Context, EmptyMutation, EmptySubscription, FieldResult, RootNode};
@@ -68,10 +68,12 @@ pub(crate) use filter_context;
 pub struct Ctx {
     pub cards: Vec<Card>,
     pub products: Vec<Product>,
+    pub sets: Vec<ProductSet>,
     // https://github.com/graphql-rust/juniper/issues/143
     // Just going to clone products again in memory, since I don't want to deal with lifetime
     // parameters in the Context object in juniper
     products_index: HashMap<String, Product>,
+    sets_index: HashMap<String, ProductSet>,
 }
 
 impl Context for Ctx {}
@@ -82,16 +84,31 @@ impl Ctx {
             .iter()
             .map(|product| (product.code.clone(), product.clone()))
             .collect();
+        let sets: Vec<ProductSet> = products
+            .iter()
+            .map(|product| product.sets.clone())
+            .flatten()
+            .collect();
+        let sets_index: HashMap<_, _> = sets
+            .iter()
+            .map(|set| (set.name.clone(), set.clone()))
+            .collect();
 
         Self {
             cards,
             products,
+            sets,
             products_index,
+            sets_index,
         }
     }
 
     pub fn product(&self, code: impl AsRef<str>) -> Option<&Product> {
         self.products_index.get(code.as_ref())
+    }
+
+    pub fn set(&self, name: impl AsRef<str>) -> Option<&ProductSet> {
+        self.sets_index.get(name.as_ref())
     }
 }
 

@@ -83,7 +83,7 @@ mod tests {
             .build()
             .unwrap();
 
-        assert_eq!(true, sinister_set.included(&input));
+        assert_eq!(true, sinister_set.included(&input, &Ctx::default()));
     }
 
     #[test]
@@ -97,7 +97,7 @@ mod tests {
             .build()
             .unwrap();
 
-        assert_eq!(false, sinister_set.included(&input));
+        assert_eq!(false, sinister_set.included(&input, &Ctx::default()));
     }
 
     #[test]
@@ -122,10 +122,11 @@ mod tests {
             .positions(Some(None))
             .build()
             .unwrap();
+        let ctx = Ctx::default();
 
-        assert_eq!(true, sinister_set.included(&input));
-        assert_eq!(true, sinister_set.included(&input2));
-        assert_eq!(true, none_set.included(&input3));
+        assert_eq!(true, sinister_set.included(&input, &ctx));
+        assert_eq!(true, sinister_set.included(&input2, &ctx));
+        assert_eq!(true, none_set.included(&input3, &ctx));
     }
 
     #[test]
@@ -146,10 +147,11 @@ mod tests {
             .positions(Some(None))
             .build()
             .unwrap();
+        let ctx = Ctx::default();
 
-        assert_eq!(false, sinister_set.included(&input));
-        assert_eq!(false, sinister_set.included(&input_none));
-        assert_eq!(false, none_set.included(&input));
+        assert_eq!(false, sinister_set.included(&input, &ctx));
+        assert_eq!(false, sinister_set.included(&input_none, &ctx));
+        assert_eq!(false, none_set.included(&input, &ctx));
     }
 
     #[test]
@@ -160,6 +162,6 @@ mod tests {
         };
         let input = CardSetInputBuilder::default().build().unwrap();
 
-        assert_eq!(true, sinister_set.included(&input));
+        assert_eq!(true, sinister_set.included(&input, &Ctx::default()));
     }
 }

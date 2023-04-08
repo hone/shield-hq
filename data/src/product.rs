@@ -22,6 +22,17 @@ pub struct Product {
     pub sets: Vec<Set>,
 }
 
+#[derive(GraphQLInputObject)]
+#[graphql(scalar = SHQScalarValue)]
+pub struct ProductInput {
+    pub name: Option<String>,
+    pub release_date: Option<NaiveDate>,
+    pub r#type: Option<ProductType>,
+    pub code: Option<String>,
+    pub wave: Option<u32>,
+    pub sets: Option<Vec<SetInput>>,
+}
+
 #[graphql_object(scalar = SHQScalarValue)]
 impl Product {
     fn name(&self) -> &str {

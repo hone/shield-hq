@@ -1,8 +1,7 @@
 use crate::{
     card::{Card, CardInput},
-    product::{Product, ProductType, Set as ProductSet, SetInput as ProductSetInput},
+    product::{Product, ProductInput, Set as ProductSet},
 };
-use chrono::NaiveDate;
 use juniper::{graphql_object, Context, EmptyMutation, EmptySubscription, FieldResult, RootNode};
 use std::collections::HashMap;
 
@@ -116,46 +115,42 @@ pub struct Query;
 
 #[graphql_object(Context = Ctx, Scalar = SHQScalarValue)]
 impl Query {
-    fn products(
-        context: &Ctx,
-        name: Option<String>,
-        release_date: Option<NaiveDate>,
-        r#type: Option<ProductType>,
-        code: Option<String>,
-        wave: Option<u32>,
-        sets: Option<Vec<ProductSetInput>>,
-    ) -> FieldResult<Vec<&Product>> {
+    fn products(context: &Ctx, r#where: Option<ProductInput>) -> FieldResult<Vec<&Product>> {
         let products = &context.products;
 
-        Ok(products
-            .into_iter()
-            .filter(|product| {
-                let mut filter = true;
+        if let Some(r#where) = r#where {
+            Ok(products
+                .into_iter()
+                .filter(|product| {
+                    let mut filter = true;
 
-                filter!(filter,
-                    &product.name => name,
-                    &product.release_date => release_date,
-                    &product.r#type => r#type,
-                    &product.code => code,
-                    &product.wave => wave
-                );
-                if let Some(input_sets) = &sets {
-                    filter = filter
-                        && !input_sets
-                            .iter()
-                            .filter(|input_set| {
-                                product
-                                    .sets
-                                    .iter()
-                                    .any(|product_set| product_set.included(input_set))
-                            })
-                            .collect::<Vec<_>>()
-                            .is_empty();
-                }
+                    filter!(filter,
+                        &product.name => r#where.name,
+                        &product.release_date => r#where.release_date,
+                        &product.r#type => r#where.r#type,
+                        &product.code => r#where.code,
+                        &product.wave => r#where.wave
+                    );
+                    if let Some(input_sets) = &r#where.sets {
+                        filter = filter
+                            && !input_sets
+                                .iter()
+                                .filter(|input_set| {
+                                    product
+                                        .sets
+                                        .iter()
+                                        .any(|product_set| product_set.included(input_set))
+                                })
+                                .collect::<Vec<_>>()
+                                .is_empty();
+                    }
 
-                filter
-            })
-            .collect())
+                    filter
+                })
+                .collect())
+        } else {
+            Ok(products.into_iter().collect())
+        }
     }
 
     fn cards(context: &Ctx, r#where: Option<CardInput>) -> FieldResult<Vec<&Card>> {
